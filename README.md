@@ -62,7 +62,6 @@ A társasjátékok strukturált formában kerülnek tárolásra, a következő l
 - **YouTube hivatkozás** (játékmenet vagy ismertető videó)
 - **Borítókép**
 - **Nyelv**
-- **Ajánlott célcsoport** (pl. család, gyerek, felnőtt)
 - **Felhasználói értékelés** (1–5 csillagos átlag)
 
 ---
@@ -118,7 +117,7 @@ Admin felhasználók számára külön menüpontok érhetők el:
 
 ---
 
-## 9. AI-alapú társasjáték-felvitel (csak mobilon)
+## 9. AI-alapú társasjáték-felvitel
 
 Ez a funkció a rendszer „high-tech” kiemelt eleme, amely a marketing kommunikáció fő eleme is lesz.
 
