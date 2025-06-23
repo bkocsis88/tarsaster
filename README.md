@@ -11,7 +11,7 @@ Az alkalmazás modern technológiákat ötvöz, beleértve egy reszponzív Boots
 ## 2. Architektúra és technológiai háttér
 
 - **Frontend**: HTML, CSS, JavaScript – Bootstrap frameworkre építve, reszponzív megjelenéssel.
-- **Backend**: PHP alapú REST-szerű szerveroldali logika.
+- **Backend**: Node.JS / EJS alapú REST-szerű szerveroldali logika.
 - **Adatbázis**: MariaDB – relációs adatmodell, optimalizálva társasjátékok és felhasználók közötti kapcsolatok tárolására.
 - **AI modul**: Kép alapján történő adatkinyerés mobilon, AI-alapú képfeldolgozással.
 - **Mobil támogatás**: Az alkalmazás reszponzív, később mobilalkalmazásként (PWA vagy natív wrapper) is kiadásra kerül.
