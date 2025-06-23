@@ -1,0 +1,27 @@
+Projekt meeting vezető
+
+I. Funkciók alapján képernyők tervezése
+	- drótvázak
+		- user felület
+		- admin felület
+		- hiba oldalak
+		
+	- netről minták
+	
+
+II. Adatbázis tervezés
+	- relációs diagram
+	- táblák tervezése, létrehozása
+	- példa adatok feltöltése
+
+III. Arculati tervek
+	- logo
+	- favicon
+	- színek
+	- elrendezés, betűméretek, betűtípus
+
+IV. Aloldalak létrehozása
+
+V. Frontend programozása
+
+VI. Backend programozása
