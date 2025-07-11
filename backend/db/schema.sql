@@ -1,3 +1,7 @@
+CREATE DATABASE board_game;
+
+USE board_game;
+
 CREATE TABLE BoardGame (
     boardgame_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(250) NOT NULL,
