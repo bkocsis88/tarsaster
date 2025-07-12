@@ -8,6 +8,7 @@ CREATE TABLE BoardGame (
     age_limit INT NOT NULL,
     player_count INT NOT NULL,
     category VARCHAR(250) NOT NULL,
+    playing_time TEXT NOT NULL,
     publisher VARCHAR(250),
     video_url VARCHAR(250),
     tags TEXT
@@ -25,11 +26,11 @@ CREATE TABLE BoardGameImage (
 
 CREATE TABLE User (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username TEXT NOT NULL,
-    email VARCHAR(255) NOT NULL,
+    username TEXT NOT NULL UNIQUE,
+    email VARCHAR(255) NOT NULL UNIQUE,
     full_name TEXT NOT NULL,
     password TEXT NOT NULL,
-    age INT,
+    birthdate DATE,
     location VARCHAR(255)
 );
 
