@@ -1,0 +1,65 @@
+// Database: board_game
+
+Table BoardGame {
+  boardgame_id INT [pk, increment]
+  name VARCHAR(250) [not null]
+  age_limit INT [not null]
+  player_count INT [not null]
+  category VARCHAR(250) [not null]
+  playing_time TEXT [not null]
+  publisher VARCHAR(250)
+  video_url VARCHAR(250)
+  tags TEXT
+}
+
+Table BoardGameImage {
+  image_id INT [pk, increment]
+  boardgame_id INT [not null]
+  data TEXT [not null]
+}
+
+Table User {
+  user_id INT [pk, increment]
+  username TEXT [not null, unique]
+  email VARCHAR(255) [not null, unique]
+  full_name TEXT [not null]
+  password TEXT [not null]
+  birthdate DATE
+  location VARCHAR(255)
+}
+
+Table UserBoardGame {
+  user_id INT [not null]
+  boardgame_id INT [not null]
+
+  // Composite Primary Key
+  Primary Key (user_id, boardgame_id)
+}
+
+Table Wishlist {
+  user_id INT [not null]
+  boardgame_id INT [not null]
+
+  // Composite Primary Key
+  Primary Key (user_id, boardgame_id)
+}
+
+Table UserGroup {
+  group_id INT [pk, increment]
+  group_name VARCHAR(255) [not null]
+  description TEXT [not null]
+}
+
+Table GroupMember {
+  group_member_id INT [pk, increment]
+  user_id INT [not null]
+  group_id INT [not null]
+}
+
+Ref: BoardGameImage.boardgame_id > BoardGame.boardgame_id
+Ref: UserBoardGame.user_id > User.user_id
+Ref: UserBoardGame.boardgame_id > BoardGame.boardgame_id
+Ref: Wishlist.user_id > User.user_id
+Ref: Wishlist.boardgame_id > BoardGame.boardgame_id
+Ref: GroupMember.user_id > User.user_id
+Ref: GroupMember.group_id > UserGroup.group_id
