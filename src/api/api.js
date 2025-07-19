@@ -1,11 +1,23 @@
 const express = require('express');
 const mariadb = require('mariadb');
 const cors = require('cors');
+const session = require('express-session');
 const api = express.Router();
 
 api.use(cors());
+api.use(express.urlencoded({ extended: true }));
 api.use(express.json());
 
+api.use(session({
+    secret: 'valami_nagyon_titkos_szó', // environment variable-ben tárold élesben!
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // állítsd true-ra HTTPS esetén
+        maxAge: 1000 * 60 * 60 // 1 óra
+    }
+}));
 
 const pool = mariadb.createPool({
     host: 'localhost',
@@ -91,6 +103,32 @@ api.post('/users', async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználó létrehozásakor.' });
     }
+});
+
+// 🔐 Login endpoint
+api.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email és jelszó megadása kötelező!' });
+    }
+
+    const [user] = await query('SELECT * FROM User WHERE email = ?', [email]);
+
+    if (!user) {
+        return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
+    }
+
+    const isPasswordValid = password === user.password;
+    if (!isPasswordValid) {
+        return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
+    }
+
+    // Session létrehozása
+    req.session.userId = user.user_id;
+    req.session.username = user.username;
+
+    res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
 });
 
 module.exports = api;
