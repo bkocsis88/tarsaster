@@ -1,11 +1,24 @@
 const express = require('express');
 const mariadb = require('mariadb');
 const cors = require('cors');
+const session = require('express-session');
+const { body, validationResult } = require('express-validator');
 const api = express.Router();
 
 api.use(cors());
+api.use(express.urlencoded({ extended: true }));
 api.use(express.json());
 
+api.use(session({
+    secret: 'valami_nagyon_titkos_szó', // environment variable-ben tárold élesben!
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // állítsd true-ra HTTPS esetén
+        maxAge: 1000 * 60 * 60 // 1 óra
+    }
+}));
 
 const pool = mariadb.createPool({
     host: 'localhost',
@@ -90,6 +103,70 @@ api.post('/users', async (req, res) => {
         res.status(201).json({ id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználó létrehozásakor.' });
+    }
+});
+
+// 🔐 Login endpoint
+api.post('/login', async (req, res) => {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email és jelszó megadása kötelező!' });
+    }
+
+    const [user] = await query('SELECT * FROM User WHERE email = ?', [email]);
+
+    if (!user) {
+        return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
+    }
+
+    const isPasswordValid = password === user.password;
+    if (!isPasswordValid) {
+        return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
+    }
+
+    // Session létrehozása
+    req.session.userId = user.user_id;
+    req.session.username = user.username;
+
+    res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
+});
+
+// Register endpoint
+api.post('/register', [
+    body('username').notEmpty().withMessage('Felhasználónév kötelező'),
+    body('email').isEmail().withMessage('Érvényes email kell'),
+    body('full_name').notEmpty().withMessage('Teljes név kötelező'),
+    body('password').isLength({ min: 8 }).withMessage('A jelszónak legalább 8 karakteresnek kell lennie'),
+    body('birthdate').optional({ checkFalsy: true }).isISO8601().withMessage('Születési dátum hibás'),
+    body('location').optional().isLength({ max: 255 })
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { username, email, full_name, password, birthdate, location } = req.body;
+
+    try {
+        const existing = await query(
+            'SELECT user_id FROM User WHERE username = ? OR email = ?',
+            [username, email]
+        );
+        if (existing.length > 0) {
+            return res.status(409).json({ message: 'Felhasználónév vagy email már létezik' });
+        }
+
+        await query(
+            `INSERT INTO User (username, email, full_name, password, birthdate, location)
+       VALUES (?, ?, ?, ?, ?, ?)`,
+            [username, email, full_name, password, birthdate || null, location || null]
+        );
+
+        res.status(201).json({ message: 'Sikeres regisztráció' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Szerverhiba' });
     }
 });
 
