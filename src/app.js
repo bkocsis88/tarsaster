@@ -49,6 +49,9 @@ app.get("/tarsasjatekok", (req, res) => {
 app.get("/belepes", (req, res) => {
   renderWithLayout(res, "pages/belepes", { title: "Belépés" });
 });
+app.get("/regisztracio", (req, res) => {
+  renderWithLayout(res, "pages/regisztracio", { title: "Regisztráció" });
+});
 //API végpontra példa
 const dbApi = require("./api/db");
 //API végpont URL-hez kötése, ide kell betenni az összes API-t, ami kell a lekérdezésekhez

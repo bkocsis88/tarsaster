@@ -18,4 +18,9 @@ document.getElementById('loginForm').addEventListener('submit', async function (
     else {
         alert('Hibás belépési adatok!');
     }
+    
+});
+
+document.getElementById('btn_registration').addEventListener('click', async function (e) {
+     window.location.href = '/regisztracio';
 });
