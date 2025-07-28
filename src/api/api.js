@@ -75,7 +75,7 @@ api.post('/boardgames', async (req, res) => {
     }
 });
 
-api.delete('/boardgames/:id', async (req, res) => {
+api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     try {
         await query('DELETE FROM BoardGame WHERE boardgame_id = ?', [req.params.id]);
         res.json({ message: 'Játék törölve.' });
@@ -85,7 +85,7 @@ api.delete('/boardgames/:id', async (req, res) => {
 });
 
 //User végpontok
-api.get('/users', async (req, res) => {
+api.get('/users', isAuthenticated('admin'), async (req, res) => {
     try {
         const users = await query('SELECT user_id, username, full_name, email, location, birthdate FROM User');
         res.json(users);
@@ -94,7 +94,7 @@ api.get('/users', async (req, res) => {
     }
 });
 
-api.post('/users', async (req, res) => {
+api.post('/users', isAuthenticated('admin'), async (req, res) => {
     const { username, email, full_name, password, birthdate, location } = req.body;
     try {
         const result = await query(`INSERT INTO User (username, email, full_name, password, birthdate, location)
@@ -103,6 +103,21 @@ api.post('/users', async (req, res) => {
         res.status(201).json({ id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználó létrehozásakor.' });
+    }
+});
+
+api.get('/users/:id', isAuthenticated('user'), async (req, res) => {
+    // Ha csak user role van, akkor csak a saját profilt lehet lekérni
+    if (req.session.role === 'user' && req.params.id != req.session.userId) {
+        res.status(403).json({ error: 'Nincs elegendő jogosultság.' });
+    } else {
+        try {
+            const [user] = await query('SELECT * FROM User WHERE user_id = ?', [req.params.id]);
+            if (user) res.json(user);
+            else res.status(404).json({ error: 'Felhasználó nem található.' });
+        } catch (err) {
+            res.status(500).json({ error: 'Hiba a lekérdezés során.' });
+        }
     }
 });
 
@@ -125,9 +140,12 @@ api.post('/login', async (req, res) => {
         return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
     }
 
+    const [role] = await query('SELECT role_name FROM UserRole WHERE user_id = ?', [user.user_id]);
+
     // Session létrehozása
     req.session.userId = user.user_id;
     req.session.username = user.username;
+    req.session.role = role.role_name;
 
     res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
 });
@@ -154,7 +172,7 @@ api.post('/register', [
             [username, email]
         );
         if (existing.length > 0) {
-            return res.status(409).json({ message: 'Felhasználónév vagy email már létezik' });
+            return res.status(409).json({ error: 'Felhasználónév vagy email már létezik' });
         }
 
         await query(
@@ -163,11 +181,36 @@ api.post('/register', [
             [username, email, full_name, password, birthdate || null, location || null]
         );
 
+        const users = await query(
+            'SELECT user_id FROM User WHERE username = ?', [username]
+        )
+
+        await query(
+            'INSERT INTO UserRole (user_id, role_name) VALUES (?, ?)', [users[0].user_id, 'user']
+        )
+
         res.status(201).json({ message: 'Sikeres regisztráció' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Szerverhiba' });
+        res.status(500).json({ error: 'Szerverhiba' });
     }
 });
+
+function isAuthenticated(requiredRole = null) {
+    return (req, res, next) => {
+        const userId = req.session.userId;
+        const roles = req.session.role === 'admin' ? ['admin', 'user'] : [req.session.role];
+
+        if (!userId) {
+            return res.status(401).json({ error: 'Nincs bejelentkezve' });
+        }
+
+        if (requiredRole && !roles.includes(requiredRole)) {
+            return res.status(403).json({ error: 'Nincs elegendő jogosultság' });
+        }
+
+        next();
+    };
+}
 
 module.exports = api;
