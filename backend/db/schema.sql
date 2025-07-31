@@ -1,14 +1,14 @@
-CREATE DATABASE tarsasapp; -- mert ez az alkalmazás neve
+CREATE DATABASE board_game;
 
-USE tarsasapp;
+USE board_game;
 
 CREATE TABLE BoardGame (
-    id INT AUTO_INCREMENT PRIMARY KEY, --nem kell az id-k elé a tábla neve, mert csak sokat kell gépelni később mindennél is
+    boardgame_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(250) NOT NULL,
     age_limit INT NOT NULL,
     player_count INT NOT NULL,
     category VARCHAR(250) NOT NULL,
-    playing_time INT NOT NULL,  -- percben értendő, hogy később tudjunk rá keresni (pl. playing_time <60)
+    playing_time TEXT NOT NULL,
     publisher VARCHAR(250),
     video_url VARCHAR(250),
     tags TEXT
@@ -16,17 +16,17 @@ CREATE TABLE BoardGame (
 
 
 CREATE TABLE BoardGameImage (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    image_id INT AUTO_INCREMENT PRIMARY KEY,
     boardgame_id INT NOT NULL,
     data TEXT NOT NULL,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(id)
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
         ON DELETE CASCADE
 );
 
 
 CREATE TABLE User (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_name TEXT NOT NULL UNIQUE, --mert mindent aláhúzással választottál el (csak az egység miatt)
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
     email VARCHAR(255) NOT NULL UNIQUE,
     full_name TEXT NOT NULL,
     password TEXT NOT NULL,
@@ -39,9 +39,9 @@ CREATE TABLE UserBoardGame (
     user_id INT NOT NULL,
     boardgame_id INT NOT NULL,
     PRIMARY KEY (user_id, boardgame_id),
-    FOREIGN KEY (user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
         ON DELETE CASCADE,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(id)
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
         ON DELETE CASCADE
 );
 
@@ -50,26 +50,26 @@ CREATE TABLE Wishlist (
     user_id INT NOT NULL,
     boardgame_id INT NOT NULL,
     PRIMARY KEY (user_id, boardgame_id),
-    FOREIGN KEY (user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
         ON DELETE CASCADE,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(id)
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
         ON DELETE CASCADE
 );
 
 
 CREATE TABLE UserGroup (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    group_id INT AUTO_INCREMENT PRIMARY KEY,
     group_name VARCHAR(255) NOT NULL,
     description TEXT NOT NULL
 );
 
 
 CREATE TABLE GroupMember (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+    group_member_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     group_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(id)
+    FOREIGN KEY (user_id) REFERENCES User(user_id)
         ON DELETE CASCADE,
-    FOREIGN KEY (group_id) REFERENCES UserGroup(id)
+    FOREIGN KEY (group_id) REFERENCES UserGroup(group_id)
         ON DELETE CASCADE
 );
