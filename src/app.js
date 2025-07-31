@@ -47,6 +47,13 @@ app.get("/tarsasjatekok", (req, res) => {
   renderWithLayout(res, "pages/tarsasjatekok", { title: "Társasjátékok" });
 });
 
+app.get("/belepes", (req, res) => {
+  renderWithLayout(res, "pages/belepes", { title: "Belépés" });
+});
+app.get("/regisztracio", (req, res) => {
+  renderWithLayout(res, "pages/regisztracio", { title: "Regisztráció" });
+});
+
 //API végpontra példa
 //const dbApi = require("./api/db");
 const dbApi = require("./api/api");

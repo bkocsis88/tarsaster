@@ -72,6 +72,7 @@ CREATE TABLE GroupMember (
         ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES UserGroup(group_id)
         ON DELETE CASCADE
+
 );
 
 
@@ -81,3 +82,6 @@ CREATE TABLE UserRole (
     CHECK (role_name IN ('admin', 'user')),
     FOREIGN KEY(user_id) REFERENCES User(user_id)
 );
+
+);
+
