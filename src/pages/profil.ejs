@@ -1,0 +1,44 @@
+<div class="container registrationbox">
+    <div class="d-flex justify-content-center">
+        <h1 class="mb-5">Profilom</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        <p class="lead">
+            <h2>Adataim</h2>
+        </p>
+    </div>   
+    <form id="ProfileForm">
+        <div class="mb-3">
+            <label for="emailInput" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="emailInput" placeholder="Add meg az e-mail címed">
+        </div>
+        <div class="mb-3">
+            <label for="userNameInput" class="form-label">Felhasználó név</label>
+            <input type="text" class="form-control" id="userNameInput" placeholder="Felhasználónév. Pl: mintanev123">
+        </div>
+        <div class="mb-3">
+            <label for="fullNameInput" class="form-label">Teljes név</label>
+            <input type="text" class="form-control" id="fullNameInput" placeholder="Név. Pl: Kis Béla">
+        </div>
+        <div class="mb-3">
+            <label for="birthdateInput" class="form-label">Születési dátum</label>
+            <input type="date" class="form-control" id="birthdateInput" placeholder="Születési dátum">
+        </div>
+        <div class="mb-3">
+            <label for="locationInput" class="form-label">Lakhely</label>
+            <select id="locationInput" class="form-control">
+                <option value="">Válassz egy települést</option>
+                <option value="budapest">Budapest</option>
+                <option value="dánszentmiklos">Dánszentmiklós</option>
+                <option value="biatorbagy">Biatorbágy</option>
+                <option value="abony">Abony</option>
+            </select>
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+            <button type="submit" class="btn btn-primary" id="btn_changeProfile">Mentés</button>
+            <button type="button" class="btn btn-primary" id="btn_cancel">Mégse</button>
+        </div>
+
+    </form>   
+</div>
+<script src="/js/profile.js"></script>

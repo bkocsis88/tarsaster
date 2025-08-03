@@ -21,6 +21,25 @@ app.use(express.static(path.join(__dirname, "public")))
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname)); // fontos: így layout/pages is látszik
 
+//Session kezeléséhez
+const session = require('express-session');
+app.use(session({
+    secret: 'valami_nagyon_titkos_szó', // environment variable-ben tárold élesben!
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        secure: false, // állítsd true-ra HTTPS esetén
+        maxAge: 1000 * 60 * 60 // 1 óra
+    }
+}));
+
+//Middleware: minden kérésnél elérhető lesz a session az EJS-ben
+app.use((req, res, next) => {
+  res.locals.session = req.session;
+  next();
+});
+
 // Segédfüggvény layout használathoz, megjeleníti az ejs fájlokból a html oldalt
 function renderWithLayout(res, pagePath, options = {}) {
   const fullPath = path.join(__dirname, pagePath + ".ejs");
@@ -52,6 +71,15 @@ app.get("/belepes", (req, res) => {
 });
 app.get("/regisztracio", (req, res) => {
   renderWithLayout(res, "pages/regisztracio", { title: "Regisztráció" });
+});
+app.get("/profil", (req, res) => {
+  renderWithLayout(res, "pages/profil", { title: "Profil" });
+});
+app.get("/jelszomodositas", (req, res) => {
+  renderWithLayout(res, "pages/jelszomodositas", { title: "Jelszómódosítás" });
+});
+app.get("/kilepes", (req, res) => {
+  renderWithLayout(res, "pages/kilepes", { title: "Kilépés" });
 });
 
 //API végpontra példa
