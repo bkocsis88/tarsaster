@@ -25,9 +25,14 @@ const pool = mariadb.createPool({
     user: 'dbuser',
     password: 'bIwDEiL43kqb',
     database: 'board_game',
-    connectionLimit: 5
+    connectionLimit: 5,
+    dateStrings: true
 });
 
+async function getUserById(userId) {
+    const [user] = await query('SELECT user_id, username, full_name, email, location, birthdate FROM User WHERE user_id = ?', [userId]);
+    return user || null;
+}
 
 async function query(sql, params = []) {
     let conn;
@@ -112,12 +117,42 @@ api.get('/users/:id', isAuthenticated('user'), async (req, res) => {
         res.status(403).json({ error: 'Nincs elegendő jogosultság.' });
     } else {
         try {
-            const [user] = await query('SELECT * FROM User WHERE user_id = ?', [req.params.id]);
+            const user = await getUserById(req.params.id);
             if (user) res.json(user);
             else res.status(404).json({ error: 'Felhasználó nem található.' });
         } catch (err) {
             res.status(500).json({ error: 'Hiba a lekérdezés során.' });
         }
+    }
+});
+
+api.post('/users/change-password', isAuthenticated(), [
+    body('oldPassword').notEmpty().withMessage('Régi jelszó kötelező.'),
+    body('newPassword').isLength({ min: 8 }).withMessage('Az új jelszónak legalább 8 karakterből kell állnia!')
+], async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+
+    const { oldPassword, newPassword } = req.body;
+    const userId = req.session.userId;
+
+    try {
+        const [user] = await query('SELECT * FROM User WHERE user_id = ?', [userId]);
+
+        if (!user) return res.status(404).json({ error: 'Felhasználó nem található.' });
+
+        if (user.password !== oldPassword) {
+            return res.status(401).json({ error: 'Hibás a régi jelszó!' });
+        }
+
+        await query('UPDATE User SET password = ? WHERE user_id = ?', [newPassword, userId]);
+
+        //Visszajelzés a kliensnek
+        res.json({ message: 'Sikeres módosítás!' });
+
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Szerverhiba!' });
     }
 });
 
@@ -142,12 +177,29 @@ api.post('/login', async (req, res) => {
 
     const [role] = await query('SELECT role_name FROM UserRole WHERE user_id = ?', [user.user_id]);
 
+    const userProfile = await getUserById(user.user_id);
+
     // Session létrehozása
     req.session.userId = user.user_id;
     req.session.username = user.username;
     req.session.role = role.role_name;
 
-    res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
+    //res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
+
+    res.json({ message: 'Sikeres bejelentkezés!', profile: userProfile });
+});
+
+//Logout endpoint
+api.post('/logout', isAuthenticated(), (req, res) => {
+    req.session.destroy(err => {
+        if (err) {
+            console.error('Hiba a kijelentkezés során: ', err);
+            return res.status(500).json({ error: 'Nem sikerült kijelentkezni!' });
+        }
+
+        res.clearCookie('connect.sid');
+        res.json({ message: 'Sikeres kijelentkezés!' });
+    });
 });
 
 // Register endpoint
@@ -189,10 +241,10 @@ api.post('/register', [
             'INSERT INTO UserRole (user_id, role_name) VALUES (?, ?)', [users[0].user_id, 'user']
         )
 
-        res.status(201).json({ message: 'Sikeres regisztráció' });
+        res.status(201).json({ message: 'Sikeres regisztráció!' });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Szerverhiba' });
+        res.status(500).json({ error: 'Szerverhiba!' });
     }
 });
 
