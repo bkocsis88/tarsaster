@@ -1,15 +1,15 @@
 -- BoardGame data
-INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time, publisher, video_url, tags) VALUES
-('Azul', 8, 4, 'Taktikai', '30–45 perc', 'Next Move Games', 'https://www.youtube.com/watch?v=1IvbZkX9UOg', 'csempe, logikai'),
-('Catan', 10, 4, 'Stratégiai', '60–120 perc', 'Kosmos', 'https://www.youtube.com/watch?v=Kw4tIC_xnU8', 'kereskedelem, kolónia, kockadobás'),
-('Dixit', 8, 6, 'Parti', '30 perc', 'Libellud', 'https://www.youtube.com/watch?v=YvG8e2Fbspo', 'képzelet, asszociáció'),
-('Ticket to Ride: Europe', 8, 5, 'Családi', '30–60 perc', 'Days of Wonder', 'https://www.youtube.com/watch?v=qHmf1bau9xQ', 'vasút, térkép'),
-('Pandemic', 10, 4, 'Kooperatív', '45 perc', 'Z-Man Games', 'https://www.youtube.com/watch?v=ytK1zDVTgUY', 'járvány, együttműködés'),
-('Carcassonne', 7, 5, 'Családi', '30–45 perc', 'Hans im Glück', 'https://www.youtube.com/watch?v=3kGm0vK3FfM', 'lapkalerakás, stratégia'),
-('7 Wonders', 10, 7, 'Stratégiai', '30 perc', 'Repos Production', 'https://www.youtube.com/watch?v=FFvGkI2yB6U', 'kártya, civilizáció'),
-('Terraforming Mars', 12, 5, 'Stratégiai', '120 perc', 'FryxGames', 'https://www.youtube.com/watch?v=YyknBTm_YyM', 'mars, gazdaság'),
-('Codenames', 10, 8, 'Parti', '15 perc', 'Czech Games Edition', 'https://www.youtube.com/watch?v=ZVTTgR33txo', 'szó, csapatjáték'),
-('Root', 12, 4, 'Stratégiai', '60–90 perc', 'Leder Games', 'https://www.youtube.com/watch?v=Iyq_3TazfdQ', 'frakció, háború');
+INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags) VALUES
+('Azul', 8, 4, 'Taktikai', 40, 'Next Move Games', 'https://www.youtube.com/watch?v=1IvbZkX9UOg', 'csempe, logikai'),
+('Catan', 10, 4, 'Stratégiai', 90, 'Kosmos', 'https://www.youtube.com/watch?v=Kw4tIC_xnU8', 'kereskedelem, kolónia, kockadobás'),
+('Dixit', 8, 6, 'Parti', 30, 'Libellud', 'https://www.youtube.com/watch?v=YvG8e2Fbspo', 'képzelet, asszociáció'),
+('Ticket to Ride: Europe', 8, 5, 'Családi', 45, 'Days of Wonder', 'https://www.youtube.com/watch?v=qHmf1bau9xQ', 'vasút, térkép'),
+('Pandemic', 10, 4, 'Kooperatív', 45, 'Z-Man Games', 'https://www.youtube.com/watch?v=ytK1zDVTgUY', 'járvány, együttműködés'),
+('Carcassonne', 7, 5, 'Családi', 40, 'Hans im Glück', 'https://www.youtube.com/watch?v=3kGm0vK3FfM', 'lapkalerakás, stratégia'),
+('7 Wonders', 10, 7, 'Stratégiai', 30, 'Repos Production', 'https://www.youtube.com/watch?v=FFvGkI2yB6U', 'kártya, civilizáció'),
+('Terraforming Mars', 12, 5, 'Stratégiai', 120, 'FryxGames', 'https://www.youtube.com/watch?v=YyknBTm_YyM', 'mars, gazdaság'),
+('Codenames', 10, 8, 'Parti', 15, 'Czech Games Edition', 'https://www.youtube.com/watch?v=ZVTTgR33txo', 'szó, csapatjáték'),
+('Root', 12, 4, 'Stratégiai', 75, 'Leder Games', 'https://www.youtube.com/watch?v=Iyq_3TazfdQ', 'frakció, háború');
 
 -- BoardGameImage data
 INSERT INTO BoardGameImage (boardgame_id, data) VALUES

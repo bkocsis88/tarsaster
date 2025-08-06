@@ -8,7 +8,7 @@ CREATE TABLE BoardGame (
     age_limit INT NOT NULL,
     player_count INT NOT NULL,
     category VARCHAR(250) NOT NULL,
-    playing_time TEXT NOT NULL,
+    playing_time_in_minutes INT NOT NULL,
     publisher VARCHAR(250),
     video_url VARCHAR(250),
     tags TEXT
