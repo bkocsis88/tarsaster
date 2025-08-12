@@ -3,7 +3,10 @@ const mariadb = require('mariadb');
 const cors = require('cors');
 const session = require('express-session');
 const { body, validationResult } = require('express-validator');
+const crypto = require('crypto');
 const api = express.Router();
+
+const sendPasswordResetEmail = require('./forget_pw.js');
 
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
@@ -319,6 +322,31 @@ api.post('/register', [
         console.error(err);
         res.status(500).json({ error: 'Szerverhiba!' });
     }
+});
+
+// Jelszó visszaállítás
+api.post('/reset-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ error: 'Email megadása kötelező.' });
+    }
+
+    // Generálunk egy egyedi tokent (példa: 32 byte hex)
+    const resetToken = crypto.randomBytes(32).toString('hex');
+
+    // TODO: Itt a resetToken-t elmentheted az adatbázisba a felhasználóhoz
+    // pl. token + lejárati idő (1 óra)
+
+    // Email küldése
+    await sendPasswordResetEmail(email, resetToken);
+
+    res.json({ message: 'Jelszó visszaállítási email elküldve.' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Hiba történt az email küldése közben.' });
+  }
 });
 
 function isAuthenticated(requiredRole = null) {
