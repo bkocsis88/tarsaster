@@ -50,10 +50,83 @@ async function query(sql, params = []) {
 
 //Boardgame végpontok
 api.get('/boardgames', async (req, res) => {
+    const {
+        name,
+        age_limit_min,
+        age_limit_max,
+        player_count_min,
+        player_count_max,
+        category,
+        playing_time_min,
+        playing_time_max,
+        publisher,
+        video_url,
+        tags
+    } = req.query;
+
+    let sql = 'SELECT * FROM BoardGame WHERE 1=1';
+    const params = [];
+
+    if (name) {
+        sql += ' AND name LIKE ?';
+        params.push(`%${name}%`);
+    }
+
+    if (age_limit_min) {
+        sql += ' AND age_limit >= ?';
+        params.push(age_limit_min);
+    }
+    if (age_limit_max) {
+        sql += ' AND age_limit <= ?';
+        params.push(age_limit_max);
+    }
+
+    if (player_count_min) {
+        sql += ' AND player_count >= ?';
+        params.push(player_count_min);
+    }
+    if (player_count_max) {
+        sql += ' AND player_count <= ?';
+        params.push(player_count_max);
+    }
+
+    if (category) {
+        sql += ' AND category = ?';
+        params.push(category);
+    }
+
+    if (playing_time_min) {
+        sql += ' AND playing_time_in_minutes >= ?';
+        params.push(playing_time_min);
+    }
+    if (playing_time_max) {
+        sql += ' AND playing_time_in_minutes <= ?';
+        params.push(playing_time_max);
+    }
+
+    if (publisher) {
+        sql += ' AND publisher LIKE ?';
+        params.push(`%${publisher}%`);
+    }
+
+    if (video_url) {
+        sql += ' AND video_url LIKE ?';
+        params.push(`%${video_url}%`);
+    }
+
+    if (tags) {
+        const tagList = tags.split(',');
+        for (const tag of tagList) {
+            sql += ' AND tags LIKE ?';
+            params.push(`%${tag.trim()}%`);
+        }
+    }
+
     try {
-        const games = await query('SELECT * FROM BoardGame');
-        res.json(games);
+        const results = await query(sql, params);
+        res.json(results);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Hiba a társasjátékok lekérdezésekor.' });
     }
 });
@@ -69,11 +142,11 @@ api.get('/boardgames/:id', async (req, res) => {
 });
 
 api.post('/boardgames', async (req, res) => {
-    const { name, age_limit, player_count, category, playing_time, publisher, video_url, tags } = req.body;
+    const { name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags } = req.body;
     try {
-        const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time, publisher, video_url, tags)
+        const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [name, age_limit, player_count, category, playing_time, publisher, video_url, tags]);
+            [name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags]);
         res.status(201).json({ id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Hiba a játék létrehozásakor.' });
