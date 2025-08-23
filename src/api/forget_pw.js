@@ -1,37 +1,14 @@
 const nodemailer = require('nodemailer');
-const { google } = require('googleapis');
-
-// Google Cloud Console-ban létrehozott OAuth2 adatok
-const CLIENT_ID = '906180165075-dj1b8bpo1hvvj4mrpd5rcms8hbefqer2.apps.googleusercontent.com';
-const CLIENT_SECRET = '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';
-const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
-const REFRESH_TOKEN = '1//04jdiXUWb71LUCgYIARAAGAQSNwF-L9IrK7wdcJfdW_DysxsfSKQrWaNBO66qVVp6duzZq0nTtyn1BRLrrI_EshSrky0o8EhP58M';
-
-// OAuth2 kliens inicializálása
-const oAuth2Client = new google.auth.OAuth2(
-    CLIENT_ID,
-    CLIENT_SECRET,
-    REDIRECT_URI
-);
-
-oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 // Jelszó visszaállítás e-mail küldése
 async function sendPasswordResetEmail(userEmail, resetToken) {
     try {
-        // OAuth2 access token lekérése
-        const accessToken = await oAuth2Client.getAccessToken();
-
-        // Nodemailer transporter létrehozása
+        // SMTP transporter létrehozása Gmail App Password-del
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
-                type: 'OAuth2',
-                user: 'ist.m.tunde@gmail.com',
-                clientId: CLIENT_ID,
-                clientSecret: CLIENT_SECRET,
-                refreshToken: REFRESH_TOKEN,
-                accessToken: accessToken.token,
+                user: 'tarsaster2025@gmail.com',   // a feladói Gmail címed
+                pass: 'tdocmzmvflbshtop'          // Gmail App Password
             },
         });
 
@@ -44,11 +21,11 @@ async function sendPasswordResetEmail(userEmail, resetToken) {
             to: userEmail,
             subject: 'Jelszó visszaállítás',
             html: `
-        <h3>Jelszó visszaállítás</h3>
-        <p>A jelszó visszaállításához kattints az alábbi linkre:</p>
-        <a href="${resetLink}">${resetLink}</a>
-        <p>A link 1 óráig érvényes.</p>
-      `,
+                <h3>Jelszó visszaállítás</h3>
+                <p>A jelszó visszaállításához kattints az alábbi linkre:</p>
+                <a href="${resetLink}">${resetLink}</a>
+                <p>A link 1 óráig érvényes.</p>
+            `,
         };
 
         // E-mail küldése
