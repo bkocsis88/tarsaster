@@ -78,6 +78,12 @@ app.get("/profil", (req, res) => {
 app.get("/jelszomodositas", (req, res) => {
   renderWithLayout(res, "pages/jelszomodositas", { title: "Jelszómódosítás" });
 });
+app.get("/elfelejtettjelszo", (req, res) => {
+  renderWithLayout(res, "pages/elfelejtettjelszo", { title: "Elfelejtett jelszó" });
+});
+app.get("/ujjelszo", (req, res) => {
+  renderWithLayout(res, "pages/ujjelszo", { title: "Új jelszó" });
+});
 app.get("/kilepes", (req, res) => {
   renderWithLayout(res, "pages/kilepes", { title: "Kilépés" });
 });

@@ -24,3 +24,6 @@ document.getElementById('loginForm').addEventListener('submit', async function (
 document.getElementById('btn_registration').addEventListener('click', async function (e) {
      window.location.href = '/regisztracio';
 });
+document.getElementById('btn_forgotPassword').addEventListener('click', async function (e) {
+     window.location.href = '/elfelejtettjelszo';
+});

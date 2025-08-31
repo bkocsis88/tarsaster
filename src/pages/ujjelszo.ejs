@@ -1,25 +1,25 @@
 <div class="container registrationbox">
     <div class="d-flex justify-content-center">
-        <h1 class="mb-5">Jelszómódosítás</h1>
+        <h1 class="mb-5">Új jelszó</h1>
     </div>
     <div class="d-flex justify-content-center">
-        <p class="lead">A jelszómódosításhoz kérjük add meg a régi jelszavad és az új jelszót.</p>
+        <p class="lead">Add meg az új jelszavad.</p>
     </div>
-    <form id="PasswordModifyForm">
-        <div class="mb-3">
-            <label for="oldPassword" class="form-label">Jelenlegi jelszó</label>
-            <input type="password" class="form-control" id="oldPassword" placeholder="Jelenlegi jelszó">
-        </div>
+    <form id="newPasswordForm">
         <div class="mb-3">
             <label for="newPassword" class="form-label">Új jelszó</label>
             <input type="password" class="form-control" id="newPassword" placeholder="Új jelszó">
+        </div>
+        <div class="mb-3">
+            <label for="newPassword2" class="form-label">Új jelszó még egyszer</label>
+            <input type="password" class="form-control" id="newPassword2" placeholder="Új jelszó még egyszer">
         </div>
         <div class="alert alert-warning" role="alert">
             Kérlek, biztonságos jelszót adj meg, ami tartalmaz kis- és nagybetűt, számot és speciális karaktert!
         </div>
         <div class="d-flex justify-content-center">
-            <button type="submit" class="btn btn-primary" id="btn_changePassword">Módosítom</button>
+            <button type="submit" class="btn btn-primary" id="btn_newPassword">Új jelszó</button>
         </div>
     </form>
 </div>
-<script src="/js/passwordchange.js"></script>
+<script src="/js/resetpassword.js"></script>
