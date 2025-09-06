@@ -3,7 +3,10 @@ const mariadb = require('mariadb');
 const cors = require('cors');
 const session = require('express-session');
 const { body, validationResult } = require('express-validator');
+const crypto = require('crypto');
 const api = express.Router();
+
+const sendPasswordResetEmail = require('./forget_pw.js');
 
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
@@ -319,6 +322,91 @@ api.post('/register', [
         console.error(err);
         res.status(500).json({ error: 'Szerverhiba!' });
     }
+});
+
+// Jelszó visszaállítás kezdeményezése (email küldése)
+api.post('/forgot-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ error: 'Email megadása kötelező.' });
+        }
+
+        // Felhasználó lekérése email alapján
+        const users = await query("SELECT user_id FROM User WHERE email = ?", [email]);
+        if (users.length === 0) {
+            // Biztonsági okból nem áruljuk el, ha nincs ilyen email
+            return res.json({ message: 'Ha létezik fiók ezzel az email címmel, akkor küldtünk levelet.' });
+        }
+        const userId = users[0].user_id;
+
+        // Generálunk egy egyedi tokent (példa: 32 byte hex)
+        const resetToken = crypto.randomBytes(32).toString('hex');
+
+        // Lejárati idő (1 óra)
+        const expirationAt = new Date(Date.now() + 60 * 60 * 1000);
+
+        await query(`INSERT INTO PasswordResetToken (user_id, token, expiration_at) 
+                     VALUES (?, ?, ?)`,
+            [userId, resetToken, expirationAt])
+
+        // Email küldése
+        await sendPasswordResetEmail(email, resetToken);
+
+        res.json({ message: 'Jelszó visszaállítási email elküldve.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Hiba történt az email küldése közben.' });
+    }
+});
+
+// Jelszó visszaállítás végrehajtása
+api.post('/reset-password', async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        return res.status(400).json({ message: "Hiányzó adatok" });
+    }
+
+    try {
+        // 1. Token lekérdezése
+        const [resetToken] = await query(
+            `SELECT * FROM PasswordResetToken WHERE token = ?`,
+            [token]
+        );
+
+        if (!resetToken) {
+            return res.status(400).json({ message: "Érvénytelen token" });
+        }
+
+        // 2. Ellenőrzések
+        if (resetToken.used) {
+            return res.status(400).json({ message: "A token már felhasználásra került" });
+        }
+
+        if (new Date(resetToken.expiration_at) < new Date()) {
+            return res.status(400).json({ message: "A token lejárt" });
+        }
+
+        // 3. Felhasználó jelszavának frissítése
+        await query(
+            `UPDATE User SET password = ? WHERE user_id = ?`,
+            [newPassword, resetToken.user_id]
+        );
+
+        // 4. Token megjelölése felhasználtnak
+        await query(
+            `UPDATE PasswordResetToken SET used = TRUE WHERE id = ?`,
+            [resetToken.id]
+        );
+
+        res.json({ message: "Jelszó sikeresen frissítve" });
+    } catch (error) {
+        console.error("Hiba a reset-password végpontban:", error);
+        res.status(500).json({ message: "Szerverhiba" });
+    }
+
 });
 
 function isAuthenticated(requiredRole = null) {
