@@ -175,6 +175,54 @@ api.get('/users', isAuthenticated('admin'), async (req, res) => {
     }
 });
 
+api.patch('/users/:id', isAuthenticated('user'), async (req, res) => {
+    const userId = req.params.id;
+
+    // Ha user szerepű és nem a sajátját akarja módosítani → tiltás
+    if (req.session.role === 'user' && req.session.userId != userId) {
+        return res.status(403).json({ error: 'Nincs jogosultság más felhasználó módosítására.' });
+    }
+
+    // Engedélyezett mezők
+    const { full_name, location, birthdate } = req.body;
+    const fields = [];
+    const values = [];
+
+    if (full_name !== undefined) {
+        fields.push('full_name = ?');
+        values.push(full_name);
+    }
+    if (location !== undefined) {
+        fields.push('location = ?');
+        values.push(location);
+    }
+    if (birthdate !== undefined) {
+        fields.push('birthdate = ?');
+        values.push(birthdate);
+    }
+
+    if (fields.length === 0) {
+        return res.status(400).json({ error: 'Nincs frissítendő mező.' });
+    }
+
+    try {
+        const sql = `UPDATE User SET ${fields.join(', ')} WHERE user_id = ?`;
+        values.push(userId);
+
+        const result = await query(sql, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Felhasználó nem található.' });
+        }
+
+        const updatedUser = await getUserById(userId);
+        res.json({ message: 'Felhasználó sikeresen frissítve.', user: updatedUser });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Hiba a frissítés során.' });
+    }
+});
+
 api.post('/users', isAuthenticated('admin'), async (req, res) => {
     const { username, email, full_name, password, birthdate, location } = req.body;
     try {
