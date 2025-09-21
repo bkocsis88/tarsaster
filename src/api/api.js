@@ -145,6 +145,7 @@ api.post('/login', async (req, res) => {
     // Session létrehozása
     req.session.userId = user.user_id;
     req.session.username = user.username;
+    req.session.lastname = user.full_name.split(' ').at(-1); //feldarabolja a teljes nevet és visszaadja az utolsót
     req.session.role = role.role_name;
 
     res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
