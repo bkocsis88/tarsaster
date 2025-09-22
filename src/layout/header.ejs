@@ -6,7 +6,27 @@
             <a class="nav-link" href="/">Kezdőoldal</a>
             <a class="nav-link" href="/tarsasjatekok">Társasjátékok</a>
             <a class="nav-link" href="/rolunk">Rólunk</a>
-            <a class="nav-link" href="/belepes">Belépés</a>
+            <%
+            //Bejelentkezett felhasználó ellenőrzése
+            if (session==undefined || !session || !session.username) { %>
+                <a class="nav-link" href="/belepes">Belépés</a>
+            <% } %>
         </div>
+        <%
+        //Ha be van jelentkezve a felhasználó, jelenjen meg a profil menü
+        //Session objektum ellenőrzése, hogy létezik-e
+        if (session!=undefined && session && session.username) { %>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Szia, <%session.lastname %>!
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                    <li><a class="dropdown-item" href="/profil">Profil</a></li>
+                    <li><a class="dropdown-item" href="/jelszomodositas">Jelszó módosítás</a></li>
+                    <li><a class="dropdown-item" href="/kilepes">Kijelentkezés</a></li>
+                </ul>
+            </div>
+        <% } %>
     </div>
 </nav>

@@ -250,6 +250,22 @@ api.get('/users/:id', isAuthenticated('user'), async (req, res) => {
     }
 });
 
+api.get('/profile', isAuthenticated('user'), async (req, res) => {
+    try {
+        // Mindig a session-ben lévő felhasználó profilját kérjük le
+        const userId = req.session.userId;
+        const user = await getUserById(userId);
+
+        if (user) {
+            res.json(user);
+        } else {
+            res.status(404).json({ error: 'Felhasználó nem található.' });
+        }
+    } catch (err) {
+        res.status(500).json({ error: 'Hiba a lekérdezés során.' });
+    }
+});
+
 api.post('/users/change-password', isAuthenticated(), [
     body('oldPassword').notEmpty().withMessage('Régi jelszó kötelező.'),
     body('newPassword').isLength({ min: 8 }).withMessage('Az új jelszónak legalább 8 karakterből kell állnia!')
@@ -306,6 +322,7 @@ api.post('/login', async (req, res) => {
     // Session létrehozása
     req.session.userId = user.user_id;
     req.session.username = user.username;
+    req.session.lastname = user.full_name.split(' ').at(-1); //feldarabolja a teljes nevet és visszaadja az utolsót
     req.session.role = role.role_name;
 
     //res.json({ message: 'Sikeres bejelentkezés!', userId: user.user_id });
