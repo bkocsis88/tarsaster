@@ -1,0 +1,15 @@
+<h2 class="center">Biztosan ki szeretnél lépni?</h2>
+<div class="d-grid gap-2 d-md-flex justify-content-md-center">
+  <button class="btn btn-success me-md-2" type="button" id="btn_logout">Igen</button>
+  <button class="btn btn-danger" type="button" id="btn_gotomain">Nem</button>
+</div>
+
+<script>
+    document.getElementById('btn_gotomain').addEventListener('click', async function (e) {
+        window.location.href = '/';
+    });
+    document.getElementById('btn_logout').addEventListener('click', async function (e) {
+        //to do apit meghívni
+        window.location.href = '/';
+    });
+</script>
