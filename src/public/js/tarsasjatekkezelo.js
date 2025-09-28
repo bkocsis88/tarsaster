@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
             let record = data[i];
             sorok_html += `<tr><td>${record.name}</td>
                             <td>${record.category}</td>
-                            <td>${record.player_count_max}</td>
+                            <td>${record.player_count}</td>
                             <td><button type="button" class="btn btn-info">Szerkesztés</button>
                                 <button type="button" class="btn btn-danger">Törlés</button></td></tr>`
         }
