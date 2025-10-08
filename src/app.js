@@ -72,6 +72,17 @@ app.get("/belepes", (req, res) => {
 app.get("/regisztracio", (req, res) => {
   renderWithLayout(res, "pages/regisztracio", { title: "Regisztráció" });
 });
+
+app.get("/admin/tarsasjatekkezelo", (req, res) => {
+  renderWithLayout(res, "pages/admin/tarsasjatekkezelo", { title: "Társasjáték kezelő" });
+});
+app.get("/admin/userkezeles", (req, res) => {
+  renderWithLayout(res, "pages/admin/userkezeles", { title: "User kezelés" });
+});
+
+app.get("/admin/ujtarsasjatek", (req, res) => {
+  renderWithLayout(res, "pages/admin/ujtarsasjatek", { title: "Új társasjáték felvétele" });
+});
 app.get("/profil", (req, res) => {
   renderWithLayout(res, "pages/profil", { title: "Profil" });
 });
