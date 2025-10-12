@@ -77,11 +77,14 @@ app.get("/admin/tarsasjatekkezelo", (req, res) => {
   renderWithLayout(res, "pages/admin/tarsasjatekkezelo", { title: "Társasjáték kezelő" });
 });
 app.get("/admin/userkezeles", (req, res) => {
-  renderWithLayout(res, "pages/admin/userkezeles", { title: "User kezelés" });
+  renderWithLayout(res, "pages/admin/userkezeles", { title: "Felhasználó kezelő" });
 });
 
 app.get("/admin/ujtarsasjatek", (req, res) => {
   renderWithLayout(res, "pages/admin/ujtarsasjatek", { title: "Új társasjáték felvétele" });
+});
+app.get("/admin/ujfelhasznalo", (req, res) => {
+  renderWithLayout(res, "pages/admin/ujfelhasznalo", { title: "Új felhasználó felvétele" });
 });
 app.get("/profil", (req, res) => {
   renderWithLayout(res, "pages/profil", { title: "Profil" });

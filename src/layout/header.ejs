@@ -19,11 +19,17 @@
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
                     data-bs-toggle="dropdown" aria-expanded="false">
-                    Szia, <%session.lastname %>!
+                    Szia, <%=session.lastname %>!
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                     <li><a class="dropdown-item" href="/profil">Profil</a></li>
                     <li><a class="dropdown-item" href="/jelszomodositas">Jelszó módosítás</a></li>
+                    <%if(session && session.role && session.role === 'admin') { %>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="/admin/tarsasjatekkezelo">Társasjáték kezelés</a></li>
+                        <li><a class="dropdown-item" href="/admin/userkezeles">Felhasználó kezelés</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                    <% } %>
                     <li><a class="dropdown-item" href="/kilepes">Kijelentkezés</a></li>
                 </ul>
             </div>

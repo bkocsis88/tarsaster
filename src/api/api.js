@@ -150,7 +150,7 @@ api.post('/boardgames', async (req, res) => {
         const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags]);
-        res.status(201).json({ id: result.insertId });
+        res.status(201).json({ id: Number(result.insertId) }); //a MariaDB "bigint" típust nem tudja a JS nem tudja kezelni, ezért számmá kell alakítani
     } catch (err) {
         res.status(500).json({ error: 'Hiba a játék létrehozásakor.' });
     }
