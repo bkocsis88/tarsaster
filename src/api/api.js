@@ -156,6 +156,81 @@ api.post('/boardgames', async (req, res) => {
     }
 });
 
+api.patch('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
+    const gameId = req.params.id;
+    const {
+        name,
+        age_limit,
+        player_count,
+        category,
+        playing_time_in_minutes,
+        publisher,
+        video_url,
+        tags
+    } = req.body;
+
+    // Engedélyezett mezők listája
+    const fields = [];
+    const values = [];
+
+    if (name !== undefined) {
+        fields.push('name = ?');
+        values.push(name);
+    }
+    if (age_limit !== undefined) {
+        fields.push('age_limit = ?');
+        values.push(age_limit);
+    }
+    if (player_count !== undefined) {
+        fields.push('player_count = ?');
+        values.push(player_count);
+    }
+    if (category !== undefined) {
+        fields.push('category = ?');
+        values.push(category);
+    }
+    if (playing_time_in_minutes !== undefined) {
+        fields.push('playing_time_in_minutes = ?');
+        values.push(playing_time_in_minutes);
+    }
+    if (publisher !== undefined) {
+        fields.push('publisher = ?');
+        values.push(publisher);
+    }
+    if (video_url !== undefined) {
+        fields.push('video_url = ?');
+        values.push(video_url);
+    }
+    if (tags !== undefined) {
+        fields.push('tags = ?');
+        values.push(tags);
+    }
+
+    // Ha nincs frissítendő mező
+    if (fields.length === 0) {
+        return res.status(400).json({ error: 'Nincs módosítandó mező.' });
+    }
+
+    try {
+        const sql = `UPDATE BoardGame SET ${fields.join(', ')} WHERE boardgame_id = ?`;
+        values.push(gameId);
+
+        const result = await query(sql, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Játék nem található.' });
+        }
+
+        // Frissített játék lekérése és visszaküldése
+        const [updatedGame] = await query('SELECT * FROM BoardGame WHERE boardgame_id = ?', [gameId]);
+        res.json({ message: 'Játék sikeresen módosítva.', boardgame: updatedGame });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Hiba a játék frissítése során.' });
+    }
+});
+
+
 api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     try {
         await query('DELETE FROM BoardGame WHERE boardgame_id = ?', [req.params.id]);
@@ -255,6 +330,8 @@ api.get('/profile', isAuthenticated('user'), async (req, res) => {
         // Mindig a session-ben lévő felhasználó profilját kérjük le
         const userId = req.session.userId;
         const user = await getUserById(userId);
+
+        user["role"] = req.session.role;
 
         if (user) {
             res.json(user);
