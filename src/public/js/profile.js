@@ -16,7 +16,7 @@
             option.textContent = settlement;
             locationSelect.appendChild(option); //hozzáadja az elemeket
         });
-        document.getElementById('locationInput').value=data.selectedLocation;
+        document.getElementById('locationInput').value=selectedLocation;
     }
     catch (error) {
         console.error('Hiba a települések betöltésekor:',error);
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
         document.getElementById('birthdateInput').value=data.birthdate;
         userId = data.user_id;
         //Települések betöltése az oldal betöltésekor
-        loadSettlements();
+        loadSettlements(data.location);
         
     }
     else {
