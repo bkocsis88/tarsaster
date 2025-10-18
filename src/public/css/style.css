@@ -9,3 +9,26 @@ body {
     text-align: center;
     padding: 15px;
 }
+#imagePreviews{
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+.image-preview{
+    width: 180px;
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.image-preview img {
+    width: 100%;
+    height: auto;
+    
+    padding: 5px;
+}
+.image-upload-box input[type="file"] {
+    display: none; /*elrejti a fájl inputot */
+}

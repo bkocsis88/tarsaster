@@ -1,3 +1,29 @@
+//Települések betöltése
+async function loadSettlements() {
+    try {
+        const response = await fetch('/kozsegek.txt'); //letölti a txt-t
+        const text = await response.text(); //kiolvassa a szöveget
+        const settlements = text.split('\n').filter(line => line.trim() !== ''); //soronként darabolja, szűri az üres sorokat
+
+        const locationSelect = document.getElementById('locationInput');
+        // Töröljük az alapértelmezett funkciókat, kivéve az elsőt
+        locationSelect.innerHTML = '<option value="">Válassz egy települést</option>';
+
+        //Hozzáadjuk az összes települést
+        settlements.forEach(settlement => {
+            const option = document.createElement('option');    //element objektum létrehozása
+            option.value = settlement.toLowerCase().replace(/\s+/g, '-'); // minden karaktert, ami nem értelmezhető value, kötőjelé alakítja
+            option.textContent = settlement;
+            locationSelect.appendChild(option); //hozzáadja az elemeket
+        });
+    }
+    catch (error) {
+        console.error('Hiba a települések betöltésekor:',error);
+    }
+}
+//Települések betöltése az oldal betöltésekor
+loadSettlements();
+
 document.getElementById('RegistrationForm').addEventListener('submit', async function (e) {
     //hozzá kell adni egy esemény figyelőt és az async functiont, ami lehetővé teszi, hogy egyszerre több művelet fusson a böngészőben
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését

@@ -9,7 +9,29 @@
         window.location.href = '/';
     });
     document.getElementById('btn_logout').addEventListener('click', async function (e) {
-        //to do apit meghívni
-        window.location.href = '/';
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                //Sikeres kijelentkezés
+                alert(data.message || 'Sikeres kijelentkezés!');
+                window.location.href = '/';
+            }
+            else {
+                //Hiba esetén
+                alert(data.error || 'Hiba történt a kijelentkezés során!');
+            }
+        }
+        catch (error) {
+            console.error('Hiba: ',error);
+            alert('Kapcsolati hiba történt!');
+        }
     });
 </script>
