@@ -243,7 +243,7 @@ api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
 //User végpontok
 api.get('/users', isAuthenticated('admin'), async (req, res) => {
     try {
-        const users = await query('SELECT user_id, username, full_name, email, location, birthdate FROM User');
+        const users = await query('SELECT u.user_id, username, full_name, email, location, birthdate, role_name as role FROM User u JOIN UserRole ur ON u.user_id = ur.user_id');
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználók lekérdezésekor.' });
