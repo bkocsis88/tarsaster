@@ -1,5 +1,49 @@
+/* Bootstrap színek testreszabása - TársasApp arculat */
+:root {
+    /* Elsődleges szín (primary) - Sötét kék */
+    --bs-primary: #13476E;
+    --bs-primary-rgb: 19, 71, 110;
+    
+    /* Másodlagos szín (secondary) - Türkiz */
+    --bs-secondary: #28CAB5;
+    --bs-secondary-rgb: 40, 202, 181;
+    
+    /* Siker szín (success) - Türkiz árnyalat */
+    --bs-success: #28CAB5;
+    --bs-success-rgb: 40, 202, 181;
+    
+    /* Veszély szín (danger) */
+    --bs-danger: #dc3545;
+    --bs-danger-rgb: 220, 53, 69;
+    
+    /* Figyelmeztetés szín (warning) */
+    --bs-warning: #ffc107;
+    --bs-warning-rgb: 255, 193, 7;
+    
+    /* Info szín (info) - Világos türkiz */
+    --bs-info: #28CAB5;
+    --bs-info-rgb: 40, 202, 181;
+    
+    /* Világos szín (light) */
+    --bs-light: #f8f9fa;
+    --bs-light-rgb: 248, 249, 250;
+    
+    /* Sötét szín (dark) - Sötét kék */
+    --bs-dark: #13476E;
+    --bs-dark-rgb: 19, 71, 110;
+}
+
+
 body {
-    background-color: #cecece;
+    background-color: #f0f5f8;
+}
+/* Main területe */
+main.container {
+    background-color: #ffffff; /* Fehér háttér a tartalomnak */
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(19, 71, 110, 0.1);
+    min-height: calc(100vh - 345px); /* Minimális magasság a footer felett */
 }
 .loginbox{
     max-width: 400px;
@@ -9,6 +53,7 @@ body {
     text-align: center;
     padding: 15px;
 }
+
 #imagePreviews{
     margin-bottom: 10px;
     display: flex;
@@ -31,4 +76,145 @@ body {
 }
 .image-upload-box input[type="file"] {
     display: none; /*elrejti a fájl inputot */
+}
+/* Home page carousel stílusok */
+#heroCarousel {
+    height: 400px;
+}
+
+#heroCarousel .carousel-inner,
+#heroCarousel .carousel-item {
+    height: 100%;
+}
+
+.carousel-content {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.carousel-item {
+    transition: transform 0.6s ease-in-out;
+}
+
+#heroCarousel .carousel-control-prev-icon,
+#heroCarousel .carousel-control-next-icon {
+    filter: invert(1);
+}
+
+/* Card hover effekt */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(19, 71, 110, 0.1);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(40, 202, 181, 0.3);
+    border-color: rgba(40, 202, 181, 0.5);
+}
+
+/* Responsive carousel */
+@media (max-width: 768px) {
+    #heroCarousel {
+        height: 350px;
+    }
+    
+    .carousel-content h1,
+    .carousel-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .carousel-content .lead {
+        font-size: 1rem;
+    }
+    
+    .carousel-content i {
+        font-size: 60px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    #heroCarousel {
+        height: 400px;
+    }
+    
+    .carousel-content h1,
+    .carousel-content h2 {
+        font-size: 1.2rem;
+    }
+    
+    .carousel-content .lead {
+        font-size: 0.9rem;
+    }
+}
+
+/* TársasApp alap színek */
+.bg-brand-primary {
+    background-color: #13476E !important;
+}
+
+.bg-brand-secondary {
+    background-color: #28CAB5 !important;
+}
+
+.text-brand-primary {
+    color: #13476E !important;
+}
+
+.text-brand-secondary {
+    color: #28CAB5 !important;
+}
+
+/* Gombok testreszabása */
+.btn-primary {
+    background-color: #13476E;
+    border-color: #13476E;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background-color: #0f3854;
+    border-color: #0f3854;
+}
+
+.btn-outline-primary {
+    color: #13476E;
+    border-color: #13476E;
+}
+
+.btn-outline-primary:hover {
+    background-color: #13476E;
+    border-color: #13476E;
+    color: white;
+}
+
+.btn-secondary {
+    background-color: #28CAB5;
+    border-color: #28CAB5;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background-color: #22b09f;
+    border-color: #22b09f;
+}
+
+/* Linkek */
+a {
+    color: #13476E;
+}
+
+a:hover {
+    color: #28CAB5;
+}
+
+/* Bootstrap komponensek arculati felülírása */
+.nav-link.active,
+.nav-link:focus {
+    color: #28CAB5 !important;
+}
+
+.navbar-brand:hover {
+    color: #28CAB5 !important;
 }
