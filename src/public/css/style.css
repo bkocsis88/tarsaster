@@ -218,3 +218,171 @@ a:hover {
 .navbar-brand:hover {
     color: #28CAB5 !important;
 }
+
+/* Timeline stílusok */
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+
+.timeline-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 50px;
+}
+
+.timeline-item:last-child {
+    margin-bottom: 0;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    box-shadow: 0 0 0 8px #ffffff, 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.timeline-marker::before {
+    content: '';
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    border: 5px solid currentColor;
+    opacity: 0.4;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* Félkör - jobb oldalon (páratlan elemek - kártya balra, félkör jobbra) */
+.timeline-item:nth-child(odd) .timeline-marker::before {
+    clip-path: polygon(50% 0%, 50% 100%, 100% 100%, 100% 0%);
+}
+
+/* Félkör - bal oldalon (páros elemek - kártya jobbra, félkör balra) */
+.timeline-item:nth-child(even) .timeline-marker::before {
+    clip-path: polygon(0% 0%, 0% 100%, 50% 100%, 50% 0%);
+}
+
+.timeline-number {
+    color: white;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.timeline-content {
+    width: 42%;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(19, 71, 110, 0.15);
+    border-left: 4px solid #28CAB5;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.timeline-content::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 60px;
+    height: 3px;
+    background-color: inherit;
+    transform: translateY(-50%);
+}
+
+.timeline-content:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(40, 202, 181, 0.3);
+}
+
+.timeline-item:nth-child(odd) .timeline-content {
+    margin-right: auto;
+    margin-left: 0;
+}
+
+.timeline-item:nth-child(odd) .timeline-content::before {
+    right: -60px;
+    background: linear-gradient(to right, #28CAB5, transparent);
+}
+
+.timeline-item:nth-child(even) .timeline-content {
+    margin-left: auto;
+    margin-right: 0;
+    border-left: none;
+    border-right: 4px solid #13476E;
+}
+
+.timeline-item:nth-child(even) .timeline-content::before {
+    left: -60px;
+    background: linear-gradient(to left, #13476E, transparent);
+}
+
+.timeline-title {
+    color: #13476E;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Responsive timeline */
+@media (max-width: 768px) {
+    .timeline-container::before {
+        left: 40px;
+    }
+    
+    .timeline-marker {
+        left: 40px;
+        width: 60px;
+        height: 60px;
+    }
+    
+    .timeline-marker::before {
+        width: 100px;
+        height: 100px;
+    }
+    
+    /* Mobil nézetben minden félkör bal oldalon */
+    .timeline-item:nth-child(odd) .timeline-marker::before,
+    .timeline-item:nth-child(even) .timeline-marker::before {
+        clip-path: polygon(0% 0%, 0% 100%, 50% 100%, 50% 0%);
+    }
+    
+    .timeline-number {
+        font-size: 1.5rem;
+    }
+    
+    .timeline-content {
+        width: calc(100% - 100px);
+        margin-left: 100px !important;
+        margin-right: 0 !important;
+        border-left: 4px solid #28CAB5 !important;
+        border-right: none !important;
+    }
+    
+    .timeline-content::before {
+        left: -60px !important;
+        background: linear-gradient(to left, #28CAB5, transparent) !important;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content {
+        border-right: none;
+        border-left: 4px solid #28CAB5 !important;
+    }
+    
+    .timeline-item:nth-child(even) .timeline-content::before {
+        left: -60px !important;
+        background: linear-gradient(to left, #28CAB5, transparent) !important;
+    }
+}

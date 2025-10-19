@@ -161,8 +161,8 @@
     </div>
 </section>
 
-<!-- Call to Action -->
-<% if (!session.user) { %>
+<!-- Call to Action/olyan blokk, ami elvisz egy másik oldalra -->
+<% if (!session.userId) { %>
 <section class="text-center bg-light p-5 rounded mb-4">
     <h2 class="mb-3">Készen állsz a csatlakozásra?</h2>
     <p class="lead mb-4">Regisztrálj most és kezdd el építeni társasjáték gyűjteményedet!</p>
@@ -175,7 +175,7 @@
 </section>
 <% } else { %>
 <section class="text-center bg-light p-5 rounded mb-4">
-    <h2 class="mb-3">Üdv újra, <%= session.user.full_name %>!</h2>
+    <h2 class="mb-3">Üdv újra, <%= session.lastname %>!</h2>
     <p class="lead mb-4">Folytathatod, ahol abbahagytad. Fedezd fel az új játékokat vagy kezeld gyűjteményedet!</p>
     <a href="/tarsasjatekok" class="btn btn-primary btn-lg me-2">
         <i class="bi bi-grid-3x3-gap"></i> Társasjátékok
@@ -186,37 +186,45 @@
 </section>
 <% } %>
 
-<!-- Hogyan működik -->
+<!-- Hogyan működik az app-->
 <section class="mb-5">
-    <h2 class="text-center mb-4" style="color: #13476E;">Hogyan működik?</h2>
-    <div class="row">
-        <div class="col-md-3 text-center mb-4">
-            <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: #13476E;">
-                <span class="fs-1 fw-bold">1</span>
+    <h2 class="text-center mb-5" style="color: #13476E;">Hogyan működik?</h2>
+    <div class="timeline-container">
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #13476E; color: #28CAB5;">
+                <span class="timeline-number">1</span>
             </div>
-            <h5>Regisztrálj</h5>
-            <p class="text-muted">Hozz létre egy ingyenes fiókot és lépj be a TársasApp világába.</p>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Regisztrálj</h5>
+                <p class="text-muted">Hozz létre egy ingyenes fiókot és lépj be a TársasApp világába.</p>
+            </div>
         </div>
-        <div class="col-md-3 text-center mb-4">
-            <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: #28CAB5;">
-                <span class="fs-1 fw-bold">2</span>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #28CAB5; color: #13476E;">
+                <span class="timeline-number">2</span>
             </div>
-            <h5>Böngéssz</h5>
-            <p class="text-muted">Fedezd fel a társasjátékok széles kínálatát szűrőkkel és kereséssel.</p>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Böngéssz</h5>
+                <p class="text-muted">Fedezd fel a társasjátékok széles kínálatát szűrőkkel és kereséssel.</p>
+            </div>
         </div>
-        <div class="col-md-3 text-center mb-4">
-            <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: #13476E;">
-                <span class="fs-1 fw-bold">3</span>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #13476E; color: #28CAB5;">
+                <span class="timeline-number">3</span>
             </div>
-            <h5>Gyűjts</h5>
-            <p class="text-muted">Jelöld meg a meglévő játékaidat és hozz létre kívánságlistát.</p>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Gyűjts</h5>
+                <p class="text-muted">Jelöld meg a meglévő játékaidat és hozz létre kívánságlistát.</p>
+            </div>
         </div>
-        <div class="col-md-3 text-center mb-4">
-            <div class="rounded-circle text-white d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: #28CAB5;">
-                <span class="fs-1 fw-bold">4</span>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #28CAB5; color: #13476E;">
+                <span class="timeline-number">4</span>
             </div>
-            <h5>Oszd meg</h5>
-            <p class="text-muted">Kapcsolódj barátaidhoz és osszátok meg gyűjteményeiteket!</p>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Oszd meg</h5>
+                <p class="text-muted">Kapcsolódj barátaidhoz és osztjátok meg gyűjteményeiteket!</p>
+            </div>
         </div>
     </div>
 </section>
