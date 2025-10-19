@@ -267,12 +267,11 @@ api.post('/boardgames/:id/images', isAuthenticated('admin'), upload.array('image
             // Fájlnév újrakódolása Latin1 → UTF-8
             const fileName = Buffer.from(file.originalname, 'latin1').toString('utf8');
             const mimeType = file.mimetype;
-            const base64Data = file.buffer.toString('base64');
 
             const result = await query(
                 `INSERT INTO BoardGameImage (boardgame_id, data, file_name, mime_type)
-                 VALUES (?, ?, ?, ?)`,
-                [boardgameId, base64Data, fileName, mimeType]
+     VALUES (?, ?, ?, ?)`,
+                [boardgameId, file.buffer, fileName, mimeType] // buffer közvetlenül
             );
 
             insertedIds.push(Number(result.insertId));
@@ -342,13 +341,10 @@ api.get('/boardgames/:boardgameId/images/:imageId', async (req, res) => {
             return res.status(404).json({ error: 'A kép nem található.' });
         }
 
-        // Base64-ből visszaalakítjuk bináris adatra
-        const imgBuffer = Buffer.from(image.data, 'base64');
-
         // Beállítjuk a válasz fejlécét és kiküldjük a képet
         res.setHeader('Content-Type', image.mime_type);
         res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(image.file_name)}"`);
-        res.send(imgBuffer);
+        res.send(image.data); // buffer közvetlenül
 
     } catch (err) {
         console.error('Hiba a kép lekérdezése során:', err);

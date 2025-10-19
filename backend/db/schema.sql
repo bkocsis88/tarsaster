@@ -17,9 +17,9 @@ CREATE TABLE BoardGame (
 CREATE TABLE BoardGameImage (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     boardgame_id INT NOT NULL,
-    data TEXT NOT NULL, -- base64 típusban tároljuk a képet
-    file_name VARCHAR(255) NOT NULL, -- a base64 nem képes fájl nevet tárolni, ezért itt tároljuk
-    mime_type VARCHAR(255) NOt NULL, -- a file típusa
+    data MEDIUMBLOB NOT NULL,
+    file_name VARCHAR(255) NOT NULL, 
+    mime_type VARCHAR(255) NOt NULL,
     FOREIGN KEY (boardgame_id) REFERENCES BoardGame (boardgame_id) ON DELETE CASCADE
 );
 
