@@ -37,6 +37,10 @@
 body {
     background-color: #f0f5f8;
 }
+footer {
+    background-color: var(--bs-light);
+    border-top: 3px solid var(--bs-secondary);
+}
 /* Main területe */
 main.container {
     background-color: #ffffff; /* Fehér háttér a tartalomnak */
@@ -334,6 +338,53 @@ a:hover {
     color: #13476E;
     font-weight: bold;
     margin-bottom: 10px;
+}
+
+.main-icon {
+    font-size: 4rem; opacity: 0.9;
+}
+.rcbg-60{
+    width: 60px;
+    height: 60px;
+}
+.rcbg-bglight{
+    background-color: #28CAB5;
+}
+.rcbg-bgdark{
+    background-color: #13476E;
+}
+.main-subtitle-color {
+    color: #13476E;
+}
+
+.secondary-subtitle-color{
+    color: #28CAB5;
+}
+
+.display-6-5 {
+    font-size: 1.8rem;
+}
+
+.background-gradient-primary {
+    background: linear-gradient(135deg, #13476E 0%, #28CAB5 100%);
+}
+.background-gradient-primary-revese {
+    background: linear-gradient(135deg, #28CAB5 0%, #13476E 100%);
+}
+.background-gradient-lightgrey {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.rounded-15 {
+    border-radius: 15px;
+}
+.max-w-600 {
+    max-width: 600px;
+}
+
+hr {
+    border-color: #28CAB5;
+    opacity: 0.3;
 }
 
 /* Responsive timeline */
