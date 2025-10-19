@@ -240,6 +240,92 @@ api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     }
 });
 
+// BoardGameImage kezelés
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // tároljuk memóriában, nem fájlban
+
+api.put('/boardgames/:id/image', isAuthenticated('admin'), upload.single('image'), async (req, res) => {
+    const boardgameId = req.params.id;
+
+    // Ellenőrizzük, hogy van-e kép
+    if (!req.file) {
+        return res.status(400).json({ error: 'Nincs kép feltöltve.' });
+    }
+
+    // Képadatok
+    const { originalname, mimetype, buffer } = req.file;
+    const filename = Buffer.from(originalname, 'latin1').toString('utf8');
+
+    const base64Data = buffer.toString('base64');
+
+    try {
+        // Ellenőrizzük, hogy a társasjáték létezik-e
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Ellenőrizzük, van-e már kép hozzárendelve
+        const [existing] = await query('SELECT image_id FROM BoardGameImage WHERE boardgame_id = ?', [boardgameId]);
+
+        if (existing) {
+            // Frissítjük a meglévő képet
+            await query(
+                `UPDATE BoardGameImage 
+                 SET data = ?, file_name = ?, mime_type = ? 
+                 WHERE boardgame_id = ?`,
+                [base64Data, filename, mimetype, boardgameId]
+            );
+            return res.json({ message: 'A kép sikeresen frissítve.' });
+        } else {
+            // Új kép mentése
+            await query(
+                `INSERT INTO BoardGameImage (boardgame_id, data, file_name, mime_type)
+                 VALUES (?, ?, ?, ?)`,
+                [boardgameId, base64Data, filename, mimetype]
+            );
+            return res.status(201).json({ message: 'A kép sikeresen feltöltve.' });
+        }
+    } catch (err) {
+        console.error('Hiba a kép feltöltésekor:', err);
+        res.status(500).json({ error: 'Szerverhiba a kép mentése során.' });
+    }
+});
+
+api.get('/boardgames/:id/image', async (req, res) => {
+    const boardgameId = req.params.id;
+
+    try {
+        // Ellenőrzés: létezik-e a játék
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Lekérdezzük a kép adatát
+        const [image] = await query(
+            'SELECT data, file_name, mime_type FROM BoardGameImage WHERE boardgame_id = ?',
+            [boardgameId]
+        );
+
+        if (!image) {
+            return res.status(404).json({ error: 'Ehhez a társasjátékhoz még nincs kép feltöltve.' });
+        }
+
+        // Base64-ből visszaalakítjuk bináris adatra
+        const imgBuffer = Buffer.from(image.data, 'base64');
+
+        // Beállítjuk a válasz fejlécét és kiküldjük a képet
+        res.setHeader('Content-Type', image.mime_type);
+        res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(image.file_name)}"`);
+        res.send(imgBuffer);
+
+    } catch (err) {
+        console.error('Hiba a kép lekérdezése során:', err);
+        res.status(500).json({ error: 'Szerverhiba a kép lekérdezése közben.' });
+    }
+});
+
 //User végpontok
 api.get('/users', isAuthenticated('admin'), async (req, res) => {
     try {
