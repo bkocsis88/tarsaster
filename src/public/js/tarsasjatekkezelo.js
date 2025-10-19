@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
             sorok_html += `<tr><td>${record.name}</td>
                             <td>${record.category}</td>
                             <td>${record.player_count}</td>
-                            <td><button type="button" class="btn btn-info">Szerkesztés</button>
+                            <td class="text-end"><button type="button" class="btn btn-primary">Szerkesztés</button>
                                 <button type="button" class="btn btn-danger">Törlés</button></td></tr>`
         }
         table_body.innerHTML = sorok_html;
