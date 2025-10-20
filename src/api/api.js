@@ -156,6 +156,81 @@ api.post('/boardgames', async (req, res) => {
     }
 });
 
+api.patch('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
+    const gameId = req.params.id;
+    const {
+        name,
+        age_limit,
+        player_count,
+        category,
+        playing_time_in_minutes,
+        publisher,
+        video_url,
+        tags
+    } = req.body;
+
+    // Engedélyezett mezők listája
+    const fields = [];
+    const values = [];
+
+    if (name !== undefined) {
+        fields.push('name = ?');
+        values.push(name);
+    }
+    if (age_limit !== undefined) {
+        fields.push('age_limit = ?');
+        values.push(age_limit);
+    }
+    if (player_count !== undefined) {
+        fields.push('player_count = ?');
+        values.push(player_count);
+    }
+    if (category !== undefined) {
+        fields.push('category = ?');
+        values.push(category);
+    }
+    if (playing_time_in_minutes !== undefined) {
+        fields.push('playing_time_in_minutes = ?');
+        values.push(playing_time_in_minutes);
+    }
+    if (publisher !== undefined) {
+        fields.push('publisher = ?');
+        values.push(publisher);
+    }
+    if (video_url !== undefined) {
+        fields.push('video_url = ?');
+        values.push(video_url);
+    }
+    if (tags !== undefined) {
+        fields.push('tags = ?');
+        values.push(tags);
+    }
+
+    // Ha nincs frissítendő mező
+    if (fields.length === 0) {
+        return res.status(400).json({ error: 'Nincs módosítandó mező.' });
+    }
+
+    try {
+        const sql = `UPDATE BoardGame SET ${fields.join(', ')} WHERE boardgame_id = ?`;
+        values.push(gameId);
+
+        const result = await query(sql, values);
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Játék nem található.' });
+        }
+
+        // Frissített játék lekérése és visszaküldése
+        const [updatedGame] = await query('SELECT * FROM BoardGame WHERE boardgame_id = ?', [gameId]);
+        res.json({ message: 'Játék sikeresen módosítva.', boardgame: updatedGame });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Hiba a játék frissítése során.' });
+    }
+});
+
+
 api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     try {
         await query('DELETE FROM BoardGame WHERE boardgame_id = ?', [req.params.id]);
@@ -165,10 +240,152 @@ api.delete('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     }
 });
 
+// BoardGameImage kezelés
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // tároljuk memóriában, nem fájlban
+const maxUploadableFileCount = 10;
+
+api.post('/boardgames/:id/images', isAuthenticated('admin'), upload.array('images', maxUploadableFileCount), async (req, res) => {
+    const boardgameId = req.params.id;
+
+    try {
+        // Ellenőrzés: létezik-e a játék
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Ellenőrzés: érkezett-e fájl
+        if (!req.files || req.files.length === 0) {
+            return res.status(400).json({ error: 'Legalább egy képfájlt fel kell tölteni.' });
+        }
+
+        // Minden fájlt feldolgozunk és mentünk
+        const insertedIds = [];
+
+        for (const file of req.files) {
+            // Fájlnév újrakódolása Latin1 → UTF-8
+            const fileName = Buffer.from(file.originalname, 'latin1').toString('utf8');
+            const mimeType = file.mimetype;
+
+            const result = await query(
+                `INSERT INTO BoardGameImage (boardgame_id, data, file_name, mime_type)
+     VALUES (?, ?, ?, ?)`,
+                [boardgameId, file.buffer, fileName, mimeType] // buffer közvetlenül
+            );
+
+            insertedIds.push(Number(result.insertId));
+        }
+
+        res.status(201).json({
+            message: `Sikeresen feltöltve ${insertedIds.length} kép.`,
+            image_ids: insertedIds
+        });
+
+    } catch (err) {
+        console.error('Hiba a képfeltöltés során:', err);
+        res.status(500).json({ error: 'Szerverhiba a képfeltöltés közben.' });
+    }
+});
+
+api.get('/boardgames/:id/images', async (req, res) => {
+    const boardgameId = req.params.id;
+
+    try {
+        // Ellenőrzés: létezik-e a társasjáték
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Lekérdezzük az összes kép metaadatait (nem a teljes base64-et!)
+        const images = await query(
+            `SELECT image_id, file_name, mime_type 
+             FROM BoardGameImage 
+             WHERE boardgame_id = ?`,
+            [boardgameId]
+        );
+
+        if (images.length === 0) {
+            return res.status(404).json({ error: 'Ehhez a társasjátékhoz még nincs feltöltött kép.' });
+        }
+
+        // Kiegészítjük az URL-ekkel
+        const result = images.map(img => ({
+            image_id: img.image_id,
+            file_name: img.file_name,
+            mime_type: img.mime_type,
+            url: `/api/boardgames/${boardgameId}/images/${img.image_id}`
+        }));
+
+        res.json(result);
+
+    } catch (err) {
+        console.error('Hiba a képek lekérdezésekor:', err);
+        res.status(500).json({ error: 'Szerverhiba a képek lekérdezése közben.' });
+    }
+});
+
+api.get('/boardgames/:boardgameId/images/:imageId', async (req, res) => {
+    const { boardgameId, imageId } = req.params;
+
+    try {
+        const [image] = await query(
+            `SELECT data, file_name, mime_type 
+             FROM BoardGameImage 
+             WHERE boardgame_id = ? AND image_id = ?`,
+            [boardgameId, imageId]
+        );
+
+        if (!image) {
+            return res.status(404).json({ error: 'A kép nem található.' });
+        }
+
+        // Beállítjuk a válasz fejlécét és kiküldjük a képet
+        res.setHeader('Content-Type', image.mime_type);
+        res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(image.file_name)}"`);
+        res.send(image.data); // buffer közvetlenül
+
+    } catch (err) {
+        console.error('Hiba a kép lekérdezése során:', err);
+        res.status(500).json({ error: 'Szerverhiba a kép lekérdezése közben.' });
+    }
+});
+
+api.delete('/boardgames/:boardgameId/images/:imageId', isAuthenticated('admin'), async (req, res) => {
+    const { boardgameId, imageId } = req.params;
+
+    try {
+        // Ellenőrizzük, hogy létezik-e a kép a megadott játékhoz
+        const [image] = await query(
+            `SELECT image_id FROM BoardGameImage 
+             WHERE boardgame_id = ? AND image_id = ?`,
+            [boardgameId, imageId]
+        );
+
+        if (!image) {
+            return res.status(404).json({ error: 'A megadott kép nem található a társasjátékhoz.' });
+        }
+
+        // Kép törlése
+        await query(
+            `DELETE FROM BoardGameImage 
+             WHERE boardgame_id = ? AND image_id = ?`,
+            [boardgameId, imageId]
+        );
+
+        res.json({ message: 'A kép sikeresen törölve lett.' });
+
+    } catch (err) {
+        console.error('Hiba a kép törlése közben:', err);
+        res.status(500).json({ error: 'Szerverhiba a kép törlése közben.' });
+    }
+});
+
 //User végpontok
 api.get('/users', isAuthenticated('admin'), async (req, res) => {
     try {
-        const users = await query('SELECT user_id, username, full_name, email, location, birthdate FROM User');
+        const users = await query('SELECT u.user_id, username, full_name, email, location, birthdate, role_name as role FROM User u JOIN UserRole ur ON u.user_id = ur.user_id');
         res.json(users);
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználók lekérdezésekor.' });
@@ -255,6 +472,8 @@ api.get('/profile', isAuthenticated('user'), async (req, res) => {
         // Mindig a session-ben lévő felhasználó profilját kérjük le
         const userId = req.session.userId;
         const user = await getUserById(userId);
+
+        user["role"] = req.session.role;
 
         if (user) {
             res.json(user);
