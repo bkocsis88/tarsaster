@@ -353,6 +353,9 @@ a:hover {
 .rcbg-bgdark{
     background-color: #13476E;
 }
+.rcbg-bgwhite{
+    background-color: #f8f9fa;
+}
 .main-subtitle-color {
     color: #13476E;
 }
@@ -377,6 +380,10 @@ a:hover {
 
 .rounded-15 {
     border-radius: 15px;
+}
+
+.rounded-8 {
+    border-radius: 8px;
 }
 .max-w-600 {
     max-width: 600px;
