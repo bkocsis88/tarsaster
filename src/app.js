@@ -44,8 +44,9 @@ app.use((req, res, next) => {
 function renderWithLayout(res, pagePath, options = {}) {
   const fullPath = path.join(__dirname, pagePath + ".ejs");
   const template = fs.readFileSync(fullPath, "utf-8");
-  const body = ejs.render(template, options);
-  res.render("layout/layout", { ...options, body });
+  const renderOptions = { ...res.locals, ...options}; //összes változót átadjuk a renderOptionsban az ejs-nek
+  const body = ejs.render(template, renderOptions);
+  res.render("layout/layout", { ...renderOptions, body });
 }
 
 // Oldalak, minden oldalt fel kell venni

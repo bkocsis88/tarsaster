@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
                             <td>${record.full_name}</td>
                             <td>${record.email}</td>
                             <td>${record.role}</td>
-                            <td><button type="button" class="btn btn-info">Szerkesztés</button>
+                            <td class="text-end"><button type="button" class="btn btn-primary">Szerkesztés</button>
                                 <button type="button" class="btn btn-danger">Törlés</button></td></tr>`
         }
         table_body.innerHTML = sorok_html;

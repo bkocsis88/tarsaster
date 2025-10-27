@@ -25,7 +25,50 @@ document.getElementById('NewGameForm').addEventListener('submit', async function
     if (response.ok) {
         const data = await response.json(); // backend oldali üzenet lekérése
         const id = data.id; //új játék ID lekérése
-        //ide jön az API végpont, ami elküldi a szervernek a képeket
+        
+        // Képek feltöltése - összes kép egy FormData-ban
+        const imageElements = document.querySelectorAll('#imagePreviews img');
+        
+        if (imageElements.length > 0) {
+            const formData = new FormData();
+            
+            // Minden képet hozzáadunk a FormData-hoz 'images' néven (tömb)
+            for (const img of imageElements) {
+                // Base64-ből vissza kell alakítani Blob-bá
+                const base64Data = img.getAttribute('data-base64');
+                const mimeType = img.getAttribute('data-mimetype');
+                const fileName = img.getAttribute('data-filename');
+                
+                console.log('Kép feldolgozása:', fileName, mimeType);
+                
+                // Base64 -> binary -> Blob konverzió
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: mimeType });
+                
+                // FormData feltöltése - 'images' mezőnévvel (többszöri append = tömb)
+                formData.append('images', blob, fileName);
+            }
+            
+            console.log('FormData tartalmaz', imageElements.length, 'képet');
+            
+            // Egy kérésben küldjük az összes képet
+            const imageUploadResponse = await fetch(`/api/boardgames/${id}/images`, {
+                method: 'POST',
+                // NEM kell Content-Type header! A böngésző automatikusan beállítja multipart/form-data-nak
+                body: formData
+            });
+            
+            if (!imageUploadResponse.ok) {
+                alert('Hiba történt a képek feltöltése során!');
+                return;
+            }
+        }
+        
         alert('Sikeres játék hozzáadás!');
         window.location.href = '/admin/tarsasjatekkezelo'; //url átirányítás kezdőlapra
     }

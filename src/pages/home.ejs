@@ -1,4 +1,4 @@
-<section class="home-intro p-4">
+<!--<section class="home-intro p-4">
     <h1>TársasApp - ahol a játék összehoz!</h1>
     <p class="mt-3">
         A TársasApp egy online felület, ahol felfedezheted, értékelheted és megoszthatod kedvenc társasjátékaidat.
@@ -11,4 +11,220 @@
         Legyen szó családi játékról, stratégiai kihívásról vagy egy könnyed parti játékról - itt mindenki megtalálhatja
         a neki valót!
     </p>
+</section>
+-->
+
+<!-- Hero Carousel -->
+<div id="heroCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #13476E 0%, #1a5a8a 100%);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 class="display-4 fw-bold">Üdvözlünk a TársasApp-ban!</h1>
+                        <p class="lead">A társasjáték szerelmesek közösségi platformja. Fedezd fel, gyűjtsd és oszd meg kedvenc játékaidat!</p>
+                        <% if (!session.user) { %>
+                            <a href="/regisztracio" class="btn btn-light btn-lg me-2">Regisztráció</a>
+                            <a href="/belepes" class="btn btn-outline-light btn-lg">Belépés</a>
+                        <% } else { %>
+                            <a href="/tarsasjatekok" class="btn btn-light btn-lg">Böngészd a játékokat</a>
+                        <% } %>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-dice-5-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #28CAB5 0%, #22b09f 100%);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="display-5 fw-bold">Építsd gyűjteményedet!</h2>
+                        <p class="lead">Jelöld meg a meglévő játékaidat, hozz létre kívánságlistát és oszd meg barátaiddal!</p>
+                        <% if (!session.user) { %>
+                            <a href="/regisztracio" class="btn btn-light btn-lg">Kezdjük!</a>
+                        <% } else { %>
+                            <a href="/profil" class="btn btn-light btn-lg">Profilom</a>
+                        <% } %>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-collection-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #13476E 0%, #28CAB5 100%);">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2 class="display-5 fw-bold">AI-alapú felismerés</h2>
+                        <p class="lead">Készíts fotót a játékdobozról és hagyd, hogy a mesterséges intelligencia elvégezze helyetted a munkát!</p>
+                        <% if (!session.user) { %>
+                            <a href="/regisztracio" class="btn btn-light btn-lg">Próbáld ki!</a>
+                        <% } else { %>
+                            <a href="/tarsasjatekok" class="btn btn-light btn-lg">Játékok kezelése</a>
+                        <% } %>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="bi bi-camera-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Előző</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Következő</span>
+    </button>
+</div>
+
+<!-- Főbb funkciók -->
+<section class="mb-5">
+    <h2 class="text-center mb-4" style="color: #13476E;">Mit kínál a TársasApp?</h2>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-search" style="font-size: 3rem; color: #13476E;"></i>
+                    </div>
+                    <h5 class="card-title">Keresés és Szűrés</h5>
+                    <p class="card-text">Találd meg a tökéletes játékot kategória, korosztály, játékosszám és játékidő alapján.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-heart" style="font-size: 3rem; color: #28CAB5;"></i>
+                    </div>
+                    <h5 class="card-title">Kívánságlista</h5>
+                    <p class="card-text">Gyűjtsd össze az álomjátékaidat és oszd meg barátaiddal emailben vagy közvetlenül a platformon.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-people" style="font-size: 3rem; color: #13476E;"></i>
+                    </div>
+                    <h5 class="card-title">Közösség</h5>
+                    <p class="card-text">Kapcsolódj más játékosokhoz, jelöld meg barátaidat és fedezd fel egymás gyűjteményeit.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-check-circle" style="font-size: 3rem; color: #28CAB5;"></i>
+                    </div>
+                    <h5 class="card-title">Gyűjteménykezelés</h5>
+                    <p class="card-text">Jelöld meg a meglévő játékaidat és kövesd nyomon gyűjteményed bővülését.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-camera-fill" style="font-size: 3rem; color: #13476E;"></i>
+                    </div>
+                    <h5 class="card-title">AI Felismerés</h5>
+                    <p class="card-text">Mobilon készíts fotót a dobozról, és az AI automatikusan kitölti a játék adatait!</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-play-circle" style="font-size: 3rem; color: #28CAB5;"></i>
+                    </div>
+                    <h5 class="card-title">Video Ismertetők</h5>
+                    <p class="card-text">Nézz meg YouTube videókat a játékokról, hogy könnyebb legyen a döntés.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action/olyan blokk, ami elvisz egy másik oldalra -->
+<% if (!session.userId) { %>
+<section class="text-center bg-light p-5 rounded mb-4">
+    <h2 class="mb-3">Készen állsz a csatlakozásra?</h2>
+    <p class="lead mb-4">Regisztrálj most és kezdd el építeni társasjáték gyűjteményedet!</p>
+    <a href="/regisztracio" class="btn btn-primary btn-lg me-2">
+        <i class="bi bi-person-plus"></i> Regisztráció
+    </a>
+    <a href="/belepes" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-box-arrow-in-right"></i> Belépés
+    </a>
+</section>
+<% } else { %>
+<section class="text-center bg-light p-5 rounded mb-4">
+    <h2 class="mb-3">Üdv újra, <%= session.lastname %>!</h2>
+    <p class="lead mb-4">Folytathatod, ahol abbahagytad. Fedezd fel az új játékokat vagy kezeld gyűjteményedet!</p>
+    <a href="/tarsasjatekok" class="btn btn-primary btn-lg me-2">
+        <i class="bi bi-grid-3x3-gap"></i> Társasjátékok
+    </a>
+    <a href="/profil" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-person"></i> Profilom
+    </a>
+</section>
+<% } %>
+
+<!-- Hogyan működik az app-->
+<section class="mb-5">
+    <h2 class="text-center mb-5" style="color: #13476E;">Hogyan működik?</h2>
+    <div class="timeline-container">
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #13476E; color: #28CAB5;">
+                <span class="timeline-number">1</span>
+            </div>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Regisztrálj</h5>
+                <p class="text-muted">Hozz létre egy ingyenes fiókot és lépj be a TársasApp világába.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #28CAB5; color: #13476E;">
+                <span class="timeline-number">2</span>
+            </div>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Böngéssz</h5>
+                <p class="text-muted">Fedezd fel a társasjátékok széles kínálatát szűrőkkel és kereséssel.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #13476E; color: #28CAB5;">
+                <span class="timeline-number">3</span>
+            </div>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Gyűjts</h5>
+                <p class="text-muted">Jelöld meg a meglévő játékaidat és hozz létre kívánságlistát.</p>
+            </div>
+        </div>
+        <div class="timeline-item">
+            <div class="timeline-marker" style="background-color: #28CAB5; color: #13476E;">
+                <span class="timeline-number">4</span>
+            </div>
+            <div class="timeline-content">
+                <h5 class="timeline-title">Oszd meg</h5>
+                <p class="text-muted">Kapcsolódj barátaidhoz és osszátok meg gyűjteményeiteket!</p>
+            </div>
+        </div>
+    </div>
 </section>
