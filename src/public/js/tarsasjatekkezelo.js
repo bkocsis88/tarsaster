@@ -19,8 +19,10 @@ async function deleteBoardgame(boardgameId){
         //törlés sikertelen
         alert('Hiba történt a társasjáték törlése során.');
     }
-
-
+}
+async function navigateToEditPage(boardgameId) {
+    //társasjáték szerkesztés oldalra navigálás
+    window.location.href = `/admin/tarsasjatekkezelo/${boardgameId}`;
 }
 document.addEventListener('DOMContentLoaded', async function (e) {
     const response = await fetch('/api/boardgames',{
@@ -37,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async function (e) {
             sorok_html += `<tr><td>${record.name}</td>
                             <td>${record.category}</td>
                             <td>${record.player_count}</td>
-                            <td class="text-end"><button type="button" class="btn btn-primary">Szerkesztés</button>
+                            <td class="text-end"><button type="button" class="btn btn-primary" onclick="navigateToEditPage(${record.boardgame_id})">Szerkesztés</button>
                                 <button type="button" class="btn btn-danger" onclick="deleteBoardgame(${record.boardgame_id})">Törlés</button></td></tr>`
         }
         table_body.innerHTML = sorok_html;
