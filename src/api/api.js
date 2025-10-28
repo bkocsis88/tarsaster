@@ -52,94 +52,123 @@ async function query(sql, params = []) {
 }
 
 //Boardgame végpontok
+// Társasjátékok lekérése szűrőkkel és "is_in_wishlist" mezővel
 api.get('/boardgames', async (req, res) => {
-    const {
-        name,
-        age_limit_min,
-        age_limit_max,
-        player_count_min,
-        player_count_max,
-        category,
-        playing_time_min,
-        playing_time_max,
-        publisher,
-        video_url,
-        tags
-    } = req.query;
-
-    let sql = 'SELECT * FROM BoardGame WHERE 1=1';
-    const params = [];
-
-    if (name) {
-        sql += ' AND name LIKE ?';
-        params.push(`%${name}%`);
-    }
-
-    if (age_limit_min) {
-        sql += ' AND age_limit >= ?';
-        params.push(age_limit_min);
-    }
-    if (age_limit_max) {
-        sql += ' AND age_limit <= ?';
-        params.push(age_limit_max);
-    }
-
-    if (player_count_min) {
-        sql += ' AND player_count >= ?';
-        params.push(player_count_min);
-    }
-    if (player_count_max) {
-        sql += ' AND player_count <= ?';
-        params.push(player_count_max);
-    }
-
-    if (category) {
-        sql += ' AND category = ?';
-        params.push(category);
-    }
-
-    if (playing_time_min) {
-        sql += ' AND playing_time_in_minutes >= ?';
-        params.push(playing_time_min);
-    }
-    if (playing_time_max) {
-        sql += ' AND playing_time_in_minutes <= ?';
-        params.push(playing_time_max);
-    }
-
-    if (publisher) {
-        sql += ' AND publisher LIKE ?';
-        params.push(`%${publisher}%`);
-    }
-
-    if (video_url) {
-        sql += ' AND video_url LIKE ?';
-        params.push(`%${video_url}%`);
-    }
-
-    if (tags) {
-        const tagList = tags.split(',');
-        for (const tag of tagList) {
-            sql += ' AND tags LIKE ?';
-            params.push(`%${tag.trim()}%`);
-        }
-    }
-
     try {
-        const results = await query(sql, params);
-        res.json(results);
+        // Ha be van jelentkezve a felhasználó, eltároljuk az ID-t
+        const userId = req.session?.userId || null;
+
+        // Szűrés wishlist-re csak bejelentkezett usernek
+        if (req.query.isInWishlist !== undefined && !userId) {
+            return res.status(400).json({
+                error: 'Az isInWishlist paraméter csak bejelentkezes után használható.'
+            });
+        }
+
+        // Szűrőfeltételeket itt gyűjtjük
+        let conditions = [];
+        let params = [];
+
+        // Kategória szerinti szűrés
+        if (req.query.category) {
+            conditions.push('category = ?');
+            params.push(req.query.category);
+        }
+
+        // Keresés név alapján
+        if (req.query.search) {
+            conditions.push('name LIKE ?');
+            params.push('%' + req.query.search + '%');
+        }
+
+        // Minimum játékosszám
+        if (req.query.minPlayers) {
+            conditions.push('player_count >= ?');
+            params.push(req.query.minPlayers);
+        }
+
+        // Maximum játékosszám
+        if (req.query.maxPlayers) {
+            conditions.push('player_count <= ?');
+            params.push(req.query.maxPlayers);
+        }
+
+        // Korhatár szűrés
+        if (req.query.ageLimit) {
+            conditions.push('age_limit <= ?');
+            params.push(req.query.ageLimit);
+        }
+
+        // Alap lekérdezés a BoardGame táblából
+        let sql = 'SELECT * FROM BoardGame';
+
+        // Ha van feltétel, hozzáfűzzük a WHERE részt
+        if (conditions.length > 0) {
+            sql += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        // Lekérdezzük az adatokat
+        const games = await query(sql, params);
+
+        // Ha nincs bejelentkezett felhasználó, minden játék wishlist státusza false lesz
+        if (!userId) {
+            for (const g of games) {
+                g.is_in_wishlist = false;
+            }
+            return res.json(games);
+        }
+
+        // Lekérdezzük a bejelentkezett user wishlistjét
+        const wishlistRows = await query('SELECT boardgame_id FROM Wishlist WHERE user_id = ?', [userId]);
+        const wishlistIds = wishlistRows.map(row => row.boardgame_id);
+
+        // Az is_in_wishlist mezőt minden játékhoz beállítjuk
+        for (const g of games) {
+            g.is_in_wishlist = wishlistIds.includes(g.boardgame_id);
+        }
+
+        // Ha a felhasználó kérte, hogy csak a wishlist-es vagy nem wishlist-es játékokat lássa
+        if (req.query.isInWishlist !== undefined) {
+            const filterValue = req.query.isInWishlist === 'true';
+            const filteredGames = games.filter(g => g.is_in_wishlist === filterValue);
+            return res.json(filteredGames);
+        }
+
+        // Visszaadjuk az összes játékot
+        res.json(games);
+
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Hiba a társasjátékok lekérdezésekor.' });
+        console.error('Hiba a társasjátékok lekérdezésekor:', err);
+        res.status(500).json({ error: 'Szerverhiba a társasjátékok lekérdezése közben.' });
     }
 });
 
 api.get('/boardgames/:id', async (req, res) => {
     try {
         const [game] = await query('SELECT * FROM BoardGame WHERE boardgame_id = ?', [req.params.id]);
-        if (game) res.json(game);
-        else res.status(404).json({ error: 'Játék nem található.' });
+
+        if (!game) {
+            return res.status(404).json({ error: 'Játék nem található.' });
+        }
+
+        // Ellenőrzés, hogy a bejelentkezett felhasználónál a kívánságlistán van-e
+        let isInWishlist = false;
+
+        if (req.session && req.session.userId) {
+            const userId = req.session.userId;
+            const wishlistCheck = await query(
+                'SELECT 1 FROM Wishlist WHERE user_id = ? AND boardgame_id = ?',
+                [userId, req.params.id]
+            );
+            isInWishlist = wishlistCheck.length > 0;
+        }
+
+        // Hozzáadjuk a mezőt a válaszhoz
+        game.is_in_wishlist = isInWishlist;
+
+        res.json(game);
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: 'Hiba a lekérdezés során.' });
     }
 });
@@ -379,6 +408,71 @@ api.delete('/boardgames/:boardgameId/images/:imageId', isAuthenticated('admin'),
     } catch (err) {
         console.error('Hiba a kép törlése közben:', err);
         res.status(500).json({ error: 'Szerverhiba a kép törlése közben.' });
+    }
+});
+
+
+// Társasjáték hozzáadása a kívánságlistához
+api.post('/wishlist/:boardgameId', isAuthenticated('user'), async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const boardgameId = req.params.boardgameId;
+
+        // Ellenőrizzük, hogy létezik-e a játék
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Ellenőrizzük, hogy már szerepel-e a kívánságlistán
+        const existing = await query(
+            'SELECT 1 FROM Wishlist WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        if (existing.length > 0) {
+            return res.status(200).json({ message: 'Ez a játék már szerepel a kívánságlistán.' });
+        }
+
+        // Hozzáadás a kívánságlistához
+        await query(
+            'INSERT INTO Wishlist (user_id, boardgame_id) VALUES (?, ?)',
+            [userId, boardgameId]
+        );
+
+        res.status(201).json({ message: 'A játék felvéve a kívánságlistára.' });
+    } catch (err) {
+        console.error('Hiba a kívánságlistához adás során:', err);
+        res.status(500).json({ error: 'Szerverhiba a kívánságlistához adás közben.' });
+    }
+});
+
+// Társasjáték eltávolítása a kívánságlistáról
+api.delete('/wishlist/:boardgameId', isAuthenticated('user'), async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const boardgameId = req.params.boardgameId;
+
+        // Ellenőrizzük, hogy van-e ilyen bejegyzés
+        const existing = await query(
+            'SELECT 1 FROM Wishlist WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        if (existing.length === 0) {
+            return res.status(200).json({ message: 'Ez a játék nem szerepel a kívánságlistán.' });
+        }
+
+        // Töröljük a bejegyzést
+        await query(
+            'DELETE FROM Wishlist WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        res.status(200).json({ message: 'A játék eltávolítva a kívánságlistáról.' });
+    } catch (err) {
+        console.error('Hiba a kívánságlistáról törlés során:', err);
+        res.status(500).json({ error: 'Szerverhiba a kívánságlistáról törlés közben.' });
     }
 });
 
