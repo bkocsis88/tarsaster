@@ -99,6 +99,12 @@ api.get('/boardgames', async (req, res) => {
             params.push(req.query.ageLimit);
         }
 
+        // Leírás szűrés
+        if (req.query.description) {
+            conditions.push('description LIKE ?');
+            params.push('%' + req.query.description + '%');
+        }
+
         // Alap lekérdezés a BoardGame táblából
         let sql = 'SELECT * FROM BoardGame';
 
@@ -174,11 +180,11 @@ api.get('/boardgames/:id', async (req, res) => {
 });
 
 api.post('/boardgames', async (req, res) => {
-    const { name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags } = req.body;
+    const { name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags, description } = req.body;
     try {
-        const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags]);
+        const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags, description)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags, description]);
         res.status(201).json({ id: Number(result.insertId) }); //a MariaDB "bigint" típust nem tudja a JS nem tudja kezelni, ezért számmá kell alakítani
     } catch (err) {
         res.status(500).json({ error: 'Hiba a játék létrehozásakor.' });
@@ -195,7 +201,8 @@ api.patch('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
         playing_time_in_minutes,
         publisher,
         video_url,
-        tags
+        tags,
+        description
     } = req.body;
 
     // Engedélyezett mezők listája
@@ -233,6 +240,10 @@ api.patch('/boardgames/:id', isAuthenticated('admin'), async (req, res) => {
     if (tags !== undefined) {
         fields.push('tags = ?');
         values.push(tags);
+    }
+    if (description !== undefined) {
+        fields.push('description = ?');
+        values.push(description);
     }
 
     // Ha nincs frissítendő mező

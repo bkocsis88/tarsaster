@@ -11,7 +11,8 @@ CREATE TABLE BoardGame (
     playing_time_in_minutes INT NOT NULL,
     publisher VARCHAR(250),
     video_url VARCHAR(250),
-    tags TEXT
+    tags TEXT,
+    description TEXT
 );
 
 CREATE TABLE BoardGameImage (
