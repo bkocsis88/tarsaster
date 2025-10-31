@@ -515,6 +515,70 @@ api.delete('/wishlist/:boardgameId', isAuthenticated('user'), async (req, res) =
     }
 });
 
+// Társasjáték hozzáadása a felhasználó meglévő játékaihoz
+api.post('/owned/:boardgameId', isAuthenticated('user'), async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const boardgameId = req.params.boardgameId;
+
+        // Ellenőrizzük, hogy létezik-e a játék
+        const [game] = await query('SELECT boardgame_id FROM BoardGame WHERE boardgame_id = ?', [boardgameId]);
+        if (!game) {
+            return res.status(404).json({ error: 'A megadott társasjáték nem található.' });
+        }
+
+        // Ellenőrizzük, hogy már szerepel-e a user listájában
+        const existing = await query(
+            'SELECT 1 FROM UserBoardGame WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        if (existing.length > 0) {
+            return res.status(200).json({ message: 'Ez a játék már szerepel a felhasználó meglévő játékai között.' });
+        }
+
+        // Hozzáadás a táblához
+        await query(
+            'INSERT INTO UserBoardGame (user_id, boardgame_id) VALUES (?, ?)',
+            [userId, boardgameId]
+        );
+
+        res.status(201).json({ message: 'A játék hozzáadva a meglévő játékokhoz.' });
+    } catch (err) {
+        console.error('Hiba a meglévő játékokhoz adás során:', err);
+        res.status(500).json({ error: 'Szerverhiba a meglévő játékokhoz adás közben.' });
+    }
+});
+
+// Társasjáték eltávolítása a felhasználó meglévő játékai közül
+api.delete('/owned/:boardgameId', isAuthenticated('user'), async (req, res) => {
+    try {
+        const userId = req.session.userId;
+        const boardgameId = req.params.boardgameId;
+
+        // Ellenőrizzük, hogy van-e ilyen bejegyzés
+        const existing = await query(
+            'SELECT 1 FROM UserBoardGame WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        if (existing.length === 0) {
+            return res.status(200).json({ message: 'Ez a játék nem szerepel a felhasználó meglévő játékai között.' });
+        }
+
+        // Töröljük a bejegyzést
+        await query(
+            'DELETE FROM UserBoardGame WHERE user_id = ? AND boardgame_id = ?',
+            [userId, boardgameId]
+        );
+
+        res.status(200).json({ message: 'A játék eltávolítva a meglévő játékok közül.' });
+    } catch (err) {
+        console.error('Hiba a meglévő játék törlése során:', err);
+        res.status(500).json({ error: 'Szerverhiba a meglévő játék törlése közben.' });
+    }
+});
+
 //User végpontok
 api.get('/users', isAuthenticated('admin'), async (req, res) => {
     try {
