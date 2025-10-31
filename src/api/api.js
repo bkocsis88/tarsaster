@@ -52,7 +52,7 @@ async function query(sql, params = []) {
 }
 
 //Boardgame végpontok
-// Társasjátékok lekérése szűrőkkel és "is_in_wishlist" mezővel
+// Társasjátékok lekérése szűrőkkel
 api.get('/boardgames', async (req, res) => {
     try {
         // Ha be van jelentkezve a felhasználó, eltároljuk az ID-t
@@ -62,6 +62,13 @@ api.get('/boardgames', async (req, res) => {
         if (req.query.isInWishlist !== undefined && !userId) {
             return res.status(400).json({
                 error: 'Az isInWishlist paraméter csak bejelentkezes után használható.'
+            });
+        }
+
+        // Szűrés owned-ra csak bejelentkezett usernek
+        if (req.query.isOwned !== undefined && !userId) {
+            return res.status(400).json({
+                error: 'Az isOwned paraméter csak bejelentkezes után használható.'
             });
         }
 
@@ -116,10 +123,11 @@ api.get('/boardgames', async (req, res) => {
         // Lekérdezzük az adatokat
         const games = await query(sql, params);
 
-        // Ha nincs bejelentkezett felhasználó, minden játék wishlist státusza false lesz
+        // Ha nincs bejelentkezett felhasználó, minden játék wishlist és owned státusza false lesz
         if (!userId) {
             for (const g of games) {
                 g.is_in_wishlist = false;
+                g.is_owned = false;
             }
             return res.json(games);
         }
@@ -128,20 +136,31 @@ api.get('/boardgames', async (req, res) => {
         const wishlistRows = await query('SELECT boardgame_id FROM Wishlist WHERE user_id = ?', [userId]);
         const wishlistIds = wishlistRows.map(row => row.boardgame_id);
 
-        // Az is_in_wishlist mezőt minden játékhoz beállítjuk
+        // Lekérdezzük a bejelentkezett user meglévő játékait
+        const ownedRows = await query('SELECT boardgame_id FROM UserBoardGame WHERE user_id = ?', [userId]);
+        const ownedIds = ownedRows.map(row => row.boardgame_id);
+
+        // Az is_in_wishlist és az is_owned mezőt minden játékhoz beállítjuk
         for (const g of games) {
             g.is_in_wishlist = wishlistIds.includes(g.boardgame_id);
+            g.is_owned = ownedIds.includes(g.boardgame_id);
         }
+
+        let filteredGames = games;
 
         // Ha a felhasználó kérte, hogy csak a wishlist-es vagy nem wishlist-es játékokat lássa
         if (req.query.isInWishlist !== undefined) {
             const filterValue = req.query.isInWishlist === 'true';
-            const filteredGames = games.filter(g => g.is_in_wishlist === filterValue);
-            return res.json(filteredGames);
+            filteredGames = filteredGames.filter(g => g.is_in_wishlist === filterValue);
         }
 
-        // Visszaadjuk az összes játékot
-        res.json(games);
+        // Ha a felhasználó kérte, hogy csak a meglévő vagy a hiányzó játékokat lássa
+        if (req.query.isOwned !== undefined) {
+            const filterValue = req.query.isOwned === 'true';
+            filteredGames = filteredGames.filter(g => g.is_owned === filterValue);
+        }
+
+        return res.json(filteredGames);
 
     } catch (err) {
         console.error('Hiba a társasjátékok lekérdezésekor:', err);
@@ -157,20 +176,29 @@ api.get('/boardgames/:id', async (req, res) => {
             return res.status(404).json({ error: 'Játék nem található.' });
         }
 
-        // Ellenőrzés, hogy a bejelentkezett felhasználónál a kívánságlistán van-e
+        // Ellenőrzés, hogy a bejelentkezett felhasználónál a kívánságlistán van-e és megvan-e neki
         let isInWishlist = false;
+        let isOwned = false;
 
         if (req.session && req.session.userId) {
             const userId = req.session.userId;
+
             const wishlistCheck = await query(
                 'SELECT 1 FROM Wishlist WHERE user_id = ? AND boardgame_id = ?',
                 [userId, req.params.id]
             );
             isInWishlist = wishlistCheck.length > 0;
+
+            const isOwnedCheck = await query(
+                'SELECT 1 FROM UserBoardGame WHERE user_id = ? AND boardgame_id = ?',
+                [userId, req.params.id]
+            );
+            isOwned = isOwnedCheck.length > 0;
         }
 
-        // Hozzáadjuk a mezőt a válaszhoz
+        // Hozzáadjuk a mezőket a válaszhoz
         game.is_in_wishlist = isInWishlist;
+        game.is_owned = isOwned;
 
         res.json(game);
     } catch (err) {
