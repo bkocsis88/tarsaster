@@ -71,7 +71,29 @@ main.container {
     display: inline-block;
     border: 1px solid #ddd;
     border-radius: 4px;
+    position: relative;
 }
+.image-preview.trashit{
+    filter: grayscale(100%);
+}
+.image-preview .image-actions {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    padding: 5px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.image-preview .image-actions button {
+    padding: 0px 4px;
+}
+
+.image-preview .image-actions button i {
+    color: var(--bs-light);
+    font-size: 1.4rem;
+}
+
 .image-preview img {
     width: 100%;
     height: auto;

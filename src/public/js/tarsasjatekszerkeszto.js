@@ -6,9 +6,17 @@ window.addEventListener('load', function() {
     loadBoardgameData(boardgameId);
 });
 
+//kép törlése
+function deleteImage(e){
+    //lekérjük a gombot, amit megnyomtunk
+    let button = e;
+    //class-t változtatunk
+    button.parentElement.parentElement.classList.toggle("trashit");
+}
+
 //betölti a társasjáték adatait
-function loadBoardgameData(boardgameID) {
-    fetch(`/api/boardgames/${boardgameID}`)
+function loadBoardgameData(boardgameId) {
+    fetch(`/api/boardgames/${boardgameId}`)
         //visszajön a válasz
         .then(response => response.json())
         //jsonből olvassa ki az adatokat
@@ -21,7 +29,29 @@ function loadBoardgameData(boardgameID) {
             document.getElementById('videoInput').value = data.video_url;
             document.getElementById('categoryInput').value = data.category;
             document.getElementById('tagsInput').value = data.tags;
-            console.log(data); 
+            //meglévő képek betöltése külön lekéréssel
+            fetch(`/api/boardgames/${boardgameId}/images`)
+                .then(response => response.json())
+                .then(images => {
+                    //képek megjelenítése
+                    const imagePreviews = document.getElementById('imagePreviews');
+                    images.forEach(image => {
+                        //ha nincs fájlnév, akkor kihagyja a képet
+                        if (image.file_name !== null && image.file_name !== '') {
+                            const imgHtml = `<div class="image-preview">
+                            <div class="image-actions"><button type="button" class="btn btn-primary"  title="Törlés" onclick="deleteImage(this)"><i class="bi bi-trash3"></i></button></div>
+                            <img src="${image.url}"
+                                 data-status="old"
+                                 data-imageid="${image.image_id}"
+                                 data-filename="${image.filename}"
+                                 data-mimetype="${image.mimetype}"
+                                 data-base64=""
+                                 alt="Kép előnézet" />
+                            </div>`;
+                            imagePreviews.innerHTML += imgHtml;
+                        }
+                    });
+                });
         })
         //hiba esetén
         .catch(error => {
@@ -55,8 +85,66 @@ document.getElementById('ModifyGameForm').addEventListener('submit', async funct
 
     //válaszkezelés
     if (response.ok) {
-        const data = await response.json(); // backend oldali üzenet lekérése       
-        alert('Sikeres játék mentés!');
+        const data = await response.json(); // backend oldali üzenet lekérése 
+        //új képek feltöltése
+        const imageElements = document.querySelectorAll('#imagePreviews .image-preview:not(.trashit) img[data-status="new"]');
+        
+        if (imageElements.length > 0) {
+            const formData = new FormData();
+            
+            // Minden képet hozzáadunk a FormData-hoz 'images' néven (tömb)
+            for (const img of imageElements) {
+                // Base64-ből vissza kell alakítani Blob-bá
+                const base64Data = img.getAttribute('data-base64');
+                const mimeType = img.getAttribute('data-mimetype');
+                const fileName = img.getAttribute('data-filename');
+                
+                console.log('Kép feldolgozása:', fileName, mimeType);
+                
+                // Base64 -> binary -> Blob konverzió
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: mimeType });
+                
+                // FormData feltöltése - 'images' mezőnévvel (többszöri append = tömb)
+                formData.append('images', blob, fileName);
+            }
+            
+            console.log('FormData tartalmaz', imageElements.length, 'képet');
+            
+            // Egy kérésben küldjük az összes képet
+            const boardgameId = document.getElementById('boardgameId').value;
+            const imageUploadResponse = await fetch(`/api/boardgames/${boardgameId}/images`, {
+                method: 'POST',
+                // NEM kell Content-Type header! A böngésző automatikusan beállítja multipart/form-data-nak
+                body: formData
+            });
+            
+            if (!imageUploadResponse.ok) {
+                alert('Hiba történt a képek feltöltése során!');
+                return;
+            }
+        }
+        //törlendő képek törlése
+        //leszedjük azokat a képeket, amiket törlésre jelöltünk
+        const imagesToDelete = document.querySelectorAll('#imagePreviews .image-preview.trashit img[data-status="old"]');
+        for(const img of imagesToDelete) {
+            const imageId = img.getAttribute('data-imageid');
+            console.log('Törlendő kép ID:', imageId);
+            const deleteResponse = await fetch(`/api/boardgames/${boardgameId}/images/${imageId}`, {
+                method: 'DELETE'
+            });
+            if (!deleteResponse.ok) {
+                alert('Hiba történt a képek törlése során!');
+                return;
+            }
+        }
+        
+        alert('Sikeres játék módosítás!');
         window.location.href = '/admin/tarsasjatekkezelo'; //url átirányítás kezdőlapra
     }
     else {
@@ -84,7 +172,9 @@ document.getElementById('imageInput').addEventListener('change', async function 
         reader.onload = function () {
             base64String = reader.result.replace("data:", "").replace(/^.+,/, ""); //base64 szöveg kiolvasás, fityfaszok leszedése
             // Kép előnézet frissítése
-            var html = `<div class="image-preview"><img src="${reader.result}"
+            var html = `<div class="image-preview">
+            <div class="image-actions"><button type="button" class="btn btn-primary"  title="Törlés" onclick="deleteImage(this)"><i class="bi bi-trash3"></i></button></div>
+            <img src="${reader.result}" data-status="new"
             data-filename="${file.name}"
             data-mimetype="${file.type}"
             data-base64="${base64String}" alt="Kép előnézet" /></div>`;
