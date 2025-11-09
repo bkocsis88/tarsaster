@@ -3,6 +3,7 @@ document.getElementById('NewGameForm').addEventListener('submit', async function
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését
 
     const name = document.getElementById('nameInput').value.trim();   //az elejéről és a végéről kiszedi a szóközöket, biztonsági szempontból fontos
+    const description = document.getElementById('descriptionInput').value.trim();
     const age_limit = document.getElementById('ageLimitInput').value.trim(); 
     const player_count = document.getElementById('playerCountInput').value.trim();
     const playing_time_in_minutes = document.getElementById('playingTimeInMinutesInput').value.trim();
@@ -16,7 +17,7 @@ document.getElementById('NewGameForm').addEventListener('submit', async function
     const response = await fetch('/api/boardgames',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},//ebből tudja, hogy json-t küldünk
-        body: JSON.stringify({name, age_limit, player_count, playing_time_in_minutes, publisher, video_url, category, tags}) //json stringet csinál
+        body: JSON.stringify({name, description, age_limit, player_count, playing_time_in_minutes, publisher, video_url, category, tags}) //json stringet csinál
     });
 
 

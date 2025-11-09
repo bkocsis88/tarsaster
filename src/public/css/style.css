@@ -466,3 +466,50 @@ hr {
         background: linear-gradient(to left, #28CAB5, transparent) !important;
     }
 }
+
+/*Társasjátékok oldal - Kártya stílusok*/
+.boardgame-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(0,0,0,.125);
+}
+
+.boardgame-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(19,71,110,0.2);
+    border-color: var(--bs-primary);
+}
+
+.boardgame-card .card-img-top {
+    transition: opacity 0.3s ease;
+}
+
+.boardgame-card:hover .card-img-top {
+    opacity: 0.9;
+}
+
+.boardgame-card .card-title {
+    color: var(--bs-primary);
+    font-weight: 600;
+    min-height: 2.5em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.boardgame-card .card-text {
+    font-size: 0.9rem;
+}
+
+.boardgame-card .card-text i {
+    color: var(--bs-secondary);
+    margin-right: 5px;
+}
+
+/* Szűrők kártya */
+
+.card {
+    border: 1px solid rgba(19,71,110,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
