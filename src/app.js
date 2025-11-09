@@ -77,6 +77,9 @@ app.get("/regisztracio", (req, res) => {
 app.get("/admin/tarsasjatekkezelo", (req, res) => {
   renderWithLayout(res, "pages/admin/tarsasjatekkezelo", { title: "Társasjáték kezelő" });
 });
+app.get("/admin/tarsasjatekkezelo/:id", (req, res) => {
+  renderWithLayout(res, "pages/admin/tarsasjatekszerkeszto", { title: "Társasjáték szerkesztés",boardgameId: req.params.id });
+});
 app.get("/admin/userkezeles", (req, res) => {
   renderWithLayout(res, "pages/admin/userkezeles", { title: "Felhasználó kezelő" });
 });

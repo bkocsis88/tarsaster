@@ -1,3 +1,29 @@
+async function deleteBoardgame(boardgameId){
+    //törlés megerősítése popup-ban
+    if (!confirm('Biztosan törölni szeretnéd ezt a társasjátékot?')){
+        return;
+    }
+    //törlés kérés küldése a szervernek
+    const response = await fetch(`/api/boardgames/${boardgameId}`, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'}
+    });
+    //válasz kezelése
+    if (response.ok) {
+        //törlés sikeres
+        alert('A társasjáték sikeresen törölve lett.');
+        //újratöltjük az oldalt a frissített lista megjelenítéséhez
+        window.location.reload();
+    }
+    else {
+        //törlés sikertelen
+        alert('Hiba történt a társasjáték törlése során.');
+    }
+}
+async function navigateToEditPage(boardgameId) {
+    //társasjáték szerkesztés oldalra navigálás
+    window.location.href = `/admin/tarsasjatekkezelo/${boardgameId}`;
+}
 document.addEventListener('DOMContentLoaded', async function (e) {
     const response = await fetch('/api/boardgames',{
         method: 'GET',
@@ -7,16 +33,47 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     if (response.ok) {
         const data = await response.json();
         let table_body = document.getElementById('table_tarsasjatekok');
-        let sorok_html = "";
+        //betöltjük az összes játékot a képekkel együtt
+        const rows = [];
         for (let i = 0; i < data.length; i++){
             let record = data[i];
-            sorok_html += `<tr><td>${record.name}</td>
-                            <td>${record.category}</td>
-                            <td>${record.player_count}</td>
-                            <td class="text-end"><button type="button" class="btn btn-primary">Szerkesztés</button>
-                                <button type="button" class="btn btn-danger">Törlés</button></td></tr>`
+
+            //első kép lekérése
+            let imageUrl = '/images/tarsasapp-logo1.png'; //alapértelmezett kép
+            try {
+                const imagesResponse = await fetch(`/api/boardgames/${record.boardgame_id}/images`);
+                if (imagesResponse.ok) {
+                    const images = await imagesResponse.json();
+                    if (images.length > 0) {
+                        imageUrl = images[0].url;
+                    }
+                }
+            }
+            catch (error) {
+                console.log('Nincs kép ehhez a játékhoz:', record.boardgame_id);
+            }
+            //beszúr egy sor elemet a tömbbe
+            rows. push(`
+                <tr>
+                    <td>
+                        <img src="${imageUrl}"
+                             alt="${record.name}"
+                             class="img-thumbnail"
+                             style="width: 80px; height: 80px; object-fit: cover;"
+                             onerror="this.src='/images/tarsasapp-logo1.png'">
+                    </td>
+                    <td>${record.name}</td>
+                    <td>${record.category || 'N/A'}</td>
+                    <td>${record.player_count || 'N/A'}</td>
+                    <td class="text-end">
+                        <button type="button" class="btn btn-primary" onclick="navigateToEditPage(${record.boardgame_id})">Szerkesztés</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteBoardgame(${record.boardgame_id})">Törlés</button>
+                    </td>
+                </tr>    
+            `);
         }
-        table_body.innerHTML = sorok_html;
+
+        table_body.innerHTML = rows.join(' ');
     }
     else {
          alert('Szerverhiba történt!');
