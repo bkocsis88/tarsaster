@@ -16,11 +16,11 @@
     <div class="card-body">
       <h5 class="card-title">Szűrés</h5>
       <div class="row g-3">
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="filterName" class="form-label">Játék neve</label>
           <input type="text" class="form-control" id="filterName" placeholder="Keresés név szerint...">
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="filterCategory" class="form-label">Kategória</label>
           <select class="form-select" id="filterCategory">
             <option value="">Összes kategória</option>
@@ -34,9 +34,13 @@
             <option value="18+">18+</option>
           </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
           <label for="filterPlayerCount" class="form-label">Játékosok száma</label>
           <input type="number" class="form-control" id="filterPlayerCount" placeholder="Pl: 4" min="1">
+        </div>
+        <div class="col-md-3">
+          <label for="filterAge" class="form-label">Korhatár</label>
+          <input type="number" class="form-control" id="filterAge" placeholder="Pl: 12" min="0">
         </div>
       </div>
       <div class="mt-3">

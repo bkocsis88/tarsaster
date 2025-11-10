@@ -102,7 +102,7 @@ api.get('/boardgames', async (req, res) => {
 
         // Korhatár szűrés
         if (req.query.ageLimit) {
-            conditions.push('age_limit <= ?');
+            conditions.push('age_limit >= ?');
             params.push(req.query.ageLimit);
         }
 

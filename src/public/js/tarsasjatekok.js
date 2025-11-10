@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const filterName = document.getElementById('filterName');
     const filterCategory = document.getElementById('filterCategory');
     const filterPlayerCount = document.getElementById('filterPlayerCount');
+    const filterAge = document.getElementById('filterAge');
 
     //Társasjátékok betöltése
     async function loadBoardgames(filters = {}) {
@@ -25,9 +26,10 @@ document.addEventListener('DOMContentLoaded', function(){
         try {
             //Query paraméterek összeállítása
             const queryParams = new URLSearchParams();
-            if (filters.name) queryParams.append('name', filters.name);
+            if (filters.name) queryParams.append('search', filters.name);
             if (filters.category) queryParams.append('category', filters.category);
             if (filters.player_count) queryParams.append('maxPlayers', filters.player_count);
+            if (filters.player_age) queryParams.append('ageLimit', filters.player_age);
 
             const url= `/api/boardgames${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
             const response = await fetch(url);
@@ -80,19 +82,29 @@ document.addEventListener('DOMContentLoaded', function(){
 
         col.innerHTML = `
             <div class="card h-100 boardgame-card" data-game-id="${game.boardgame_id}" style="cursor: pointer;">
-                <img src=${imageUrl}" class="card-img-top" alt="${game.name}"
+                <img src="${imageUrl}" class="card-img-top" alt="${game.name}"
                     style="height: 200px; object-fit: contain;"
                     onerror="this.src='/images/tarsasapp-logo1.png'">
                 <div class="card-body">
                     <h5 class="card-title">${game.name}</h5>
-                    <p class="card-text">
+                    <div class="card-text">
                         <small class="text-muted">
-                            <i class="bi bi-people-fill"></i>${game.player_count || 'N/A'} játékos<br>
-                            <i class="bi bi-clock-fill"></i>${game.playing_time_in_minutes || 'N/A'} perc<br>
-                            <i class="bi bi-tag-fill"></i>${game.category || 'Kategória nélkül'}<br>
-                            ${game.age_limit ? `<i class="bi bi-person-badge-fill"></i>${game.age_limit}+ év` : ''}
-                        </small>
-                    </p>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                        <i class="bi bi-people-fill"></i>${game.player_count || 'N/A'} játékos
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="bi bi-clock-fill"></i>${game.playing_time_in_minutes || 'N/A'} perc
+                                    </div>
+                                    <div class="col-6">
+                                        <i class="bi bi-tag-fill"></i>${game.category || 'Kategória nélkül'}
+                                    </div>
+                                    <div class="col-6">
+                                        ${game.age_limit ? `<i class="bi bi-person-badge-fill"></i>${game.age_limit}+ év` : ''}
+                                    </div>  
+                            </div>
+                        </small>   
+                    </div>
                 </div>
                 <div class="card-footer bg-transparent">
                     <small class="text-muted">${game.publisher || 'Kiadó ismeretlen'}</small>
@@ -116,7 +128,8 @@ document.addEventListener('DOMContentLoaded', function(){
         const filters = {
             name: filterName.value.trim(),
             category: filterCategory.value,
-            player_count: filterPlayerCount.value
+            player_count: filterPlayerCount.value,
+            player_age: filterAge.value
         };
         loadBoardgames(filters);
     });
@@ -126,6 +139,7 @@ document.addEventListener('DOMContentLoaded', function(){
         filterName.value = '';
         filterCategory.value = '';
         filterPlayerCount.value = '';
+        filterAge.value = '';
         loadBoardgames();
     });
 

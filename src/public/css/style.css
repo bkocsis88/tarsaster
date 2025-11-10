@@ -140,6 +140,11 @@ main.container {
     border-color: rgba(40, 202, 181, 0.5);
 }
 
+.card.dark:hover{
+    border-color: var(--bs-primary);
+    box-shadow: 0 8px 16px rgba(19,71,110,0.2);
+}
+
 /* Responsive carousel */
 @media (max-width: 768px) {
     #heroCarousel {
