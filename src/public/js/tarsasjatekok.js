@@ -150,6 +150,27 @@ document.addEventListener('DOMContentLoaded', function(){
         }
     });
 
+    //Enter billentyű a kategória mezőben
+    filterCategory.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFiltersBtn.click();
+        }
+    });
+
+    //Enter billentyű a játékosok száma mezőben
+    filterPlayerCount.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFiltersBtn.click();
+        }
+    });
+
+    //Enter billentyű a korhatár mezőben
+    filterAge.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            applyFiltersBtn.click();
+        }
+    });
+
     //Segédfüggvények
 
     function showLoading() {
