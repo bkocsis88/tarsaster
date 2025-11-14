@@ -518,3 +518,37 @@ hr {
     border: 1px solid rgba(19,71,110,0.1);
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
+
+/* Wishlist és Owned gombok hover*/
+.wishlist-btn:hover,
+.owned-btn:hover {
+    color: #13476E !important;
+}
+
+.whishlist-btn:focus,
+.owned-btn:focus {
+    box-shadow: none !important;
+}
+
+/* Szűrő toggle gombok */
+.filter-toggle:hover {
+    color: #13476E !important;
+    transform: scale(1.1);
+    transition: all 0.2s ease;
+}
+
+.filter-toggle:focus {
+    box-shadow: none !important;
+}
+
+#filterWishlistToggle,
+#filterOwnedToggle{
+    color: #6c757d;
+    text-decoration: none;
+}
+
+#filterWishlistToggle i.bi,
+#filterOwnedToggle i.bi{
+    font-size: 1.5rem;
+}
+

@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const loadingSpinner = document.getElementById('loadingSpinner');
     const errorMessage = document.getElementById('errorMessage');
     const gameContent = document.getElementById('gameContent');
+    let currentGame = null; //Aktuálisan kiválasztott játék
 
     try {
         // Játék adatainak lekérése
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             throw new Error('A játék nem található');
         }
         const game = await gameResponse.json();
+        currentGame = game;
 
         // Játék adatainak megjelenítése
         document.getElementById('gameName').textContent = game.name;
@@ -21,6 +23,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('ageLimit').textContent = game.age_limit ? `${game.age_limit}+ év` : 'N/A';
         document.getElementById('category').textContent = game.category || 'Kategória nélkül';
         document.getElementById('publisher').textContent = game.publisher || 'Ismeretlen';
+
+        //Gombok létrehozása
+        createActionButtons(game);
 
         // Címkék megjelenítése
         if (game.tags) {
@@ -68,6 +73,115 @@ document.addEventListener('DOMContentLoaded', async function() {
         errorMessage.style.display = 'block';
         console.error('Error loading game:', error);
     }
+
+    //Gombok létrehozása és kezelése
+    function createActionButtons(game) {
+        const actionButtonsContainer = document.getElementById('actionButtons');
+
+        //Wishlist gomb
+        const wishlistBtn = document.createElement('button');
+        wishlistBtn.className = 'btn btn-outline-danger';
+        wishlistBtn.id = 'wishlistBtn';
+        wishlistBtn.innerHTML = game.is_in_wishlist
+            ? '<i class="bi bi-heart-fill"></i> Szeretném'
+            : '<i class="bi bi-heart"></i> Szeretném';
+        wishlistBtn.style.minWidth = '140px';
+
+        //Owned gomb
+        const ownedBtn = document.createElement('button');
+        ownedBtn.className = 'btn btn-outline-success';
+        ownedBtn.id = 'ownedBtn';
+        ownedBtn.innerHTML = game.is_owned
+            ? '<i class="bi bi-check-circle-fill"></i> Megvan'
+            : '<i class="bi bi-check-circle"></i> Megvan';
+        ownedBtn.style.minWidth = '140px';
+
+        //Ha a gomb actív, akkor szolidabb színt kap
+        if (game.is_in_wishlist) {
+            wishlistBtn.className = 'btn btn-danger';
+        }
+        if (game.is_owned) {
+            ownedBtn.className = 'btn btn-succes';
+        }
+
+        //Kattintás események
+        wishlistBtn.addEventListener('click', () => toggleWishlist(game));
+        ownedBtn.addEventListener('click', () => toggleOwned(game));
+
+        actionButtonsContainer.appendChild(wishlistBtn);
+        actionButtonsContainer.appendChild(ownedBtn);
+    }
+    //Wishlist toggle
+    async function toggleWishlist(game) {
+        const wishlistBtn = document.getElementById('wishlistBtn');
+        wishlistBtn.disabled = true;
+
+        try {
+            const method = game.is_in_wishlist ? 'DELETE' : 'POST';
+            const response = await fetch(`/api/wishlist/${gameId}`, {method});
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Hiba történt');
+            }
+
+            //Státusz frissítése
+            game.is_in_wishlist  = !game.is_in_wishlist;
+
+            //Gomb frissítése
+            if (game.is_in_wishlist) {
+                wishlistBtn.className = 'btn btn-danger';
+                wishlistBtn.innerHTML = '<i class="bi bi-heart-fill"></i> Szeretném';
+            }
+            else {
+                wishlistBtn.className = 'btn btn-outline-danger';
+                wishlistBtn.innerHTML = '<i class="bi bi-heart"></i> Szeretném';
+            }
+        }
+        catch (error) {
+            console.error('Wishlist hiba:', error);
+            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+        }
+        finally {
+            wishlistBtn.disabled = false;
+        }
+    }
+    //Owned toggle
+    async function toggleOwned(game) {
+        const ownedBtn = document.getElementById('ownedBtn');
+        ownedBtn.disabled = true;
+
+        try {
+            const method = game.is_owned ? 'DELETE' : 'POST';
+            const response = await fetch(`/api/owned/${gameId}`, {method});
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Hiba történt');
+            }
+
+            //Státusz frissítése
+            game.is_owned  = !game.is_owned;
+
+            //Gomb frissítése
+            if (game.is_owned) {
+                ownedBtn.className = 'btn btn-success';
+                ownedBtn.innerHTML = '<i class="bi bi-check-circle-fill"></i> Megvan';
+            }
+            else {
+                ownedBtn.className = 'btn btn-outline-success';
+                ownedBtn.innerHTML = '<i class="bi bi-check-circle"></i> Megvan';
+            }
+        }
+        catch (error) {
+            console.error('Owned hiba:', error);
+            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+        }
+        finally {
+            ownedBtn.disabled = false;
+        }
+    }
+    
 });
 
 function loadImages(images) {
