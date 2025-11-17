@@ -22,6 +22,7 @@ function loadBoardgameData(boardgameId) {
         //jsonből olvassa ki az adatokat
         .then(data => {
             document.getElementById('nameInput').value = data.name;  
+            document.getElementById('descriptionInput').value = data.description;
             document.getElementById('ageLimitInput').value = data.age_limit; 
             document.getElementById('playerCountInput').value = data.player_count;
             document.getElementById('playingTimeInMinutesInput').value = data.playing_time_in_minutes;
@@ -65,6 +66,7 @@ document.getElementById('ModifyGameForm').addEventListener('submit', async funct
 
     const boardgameId = document.getElementById('boardgameId').value;
     const name = document.getElementById('nameInput').value.trim();   //az elejéről és a végéről kiszedi a szóközöket, biztonsági szempontból fontos
+    const description = document.getElementById('descriptionInput').value.trim();
     const age_limit = document.getElementById('ageLimitInput').value.trim(); 
     const player_count = document.getElementById('playerCountInput').value.trim();
     const playing_time_in_minutes = document.getElementById('playingTimeInMinutesInput').value.trim();
@@ -78,7 +80,7 @@ document.getElementById('ModifyGameForm').addEventListener('submit', async funct
     const response = await fetch(`/api/boardgames/${boardgameId}`,{
         method: 'PATCH',
         headers: {'Content-Type': 'application/json'},//ebből tudja, hogy json-t küldünk
-        body: JSON.stringify({name, age_limit, player_count, playing_time_in_minutes, publisher, video_url, category, tags}) //json stringet csinál
+        body: JSON.stringify({name, description, age_limit, player_count, playing_time_in_minutes, publisher, video_url, category, tags}) //json stringet csinál
     });
 
 

@@ -66,7 +66,9 @@ app.get("/sutikrol", (req, res) => {
 app.get("/tarsasjatekok", (req, res) => {
   renderWithLayout(res, "pages/tarsasjatekok", { title: "Társasjátékok" });
 });
-
+app.get("/tarsasjatek/:id", (req, res) => {
+  renderWithLayout(res, "pages/tarsasjatek", { title: "Társasjáték", gameId: req.params.id });
+});
 app.get("/belepes", (req, res) => {
   renderWithLayout(res, "pages/belepes", { title: "Belépés" });
 });

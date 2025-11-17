@@ -1,0 +1,122 @@
+<section class="container py-5">
+    <div id="loadingSpinner" class="text-center my-5">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Betöltés...</span>
+        </div>
+        <p class="mt-2">Társasjáték adatainak betöltése...</p>
+    </div>
+
+    <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+
+    <div id="gameContent" style="display: none;">
+        <!-- Vissza gomb -->
+        <a href="/tarsasjatekok" class="btn btn-secondary mb-4">
+            <i class="bi bi-arrow-left"></i> Vissza a listához
+        </a>
+
+        <!-- Játék címe -->
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <h1 class="mb-0" id="gameName"></h1>
+            <div class="d-flex gap-2" id="actionButtons">
+                <!--Ikonok ide kerülnek-->
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <!-- Képgaléria -->
+            <div class="col-lg-6">
+                <div class="card h-100 dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Kép galéria</h5>
+                        <div id="gameImagesCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner" id="carouselImages">
+                                <!-- Képek ide kerülnek -->
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#gameImagesCarousel"
+                                data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Előző</span>
+                            </button>
+                            <button class="carousel-control-next" type="button" data-bs-target="#gameImagesCarousel"
+                                data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                <span class="visually-hidden">Következő</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Játék adatai -->
+            <div class="col-lg-6">
+                <div class="card h-100 dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Játék részletei</h5>
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <th><i class="bi bi-people-fill"></i> Játékosok száma:</th>
+                                    <td id="playerCount"></td>
+                                </tr>
+                                <tr>
+                                    <th><i class="bi bi-clock-fill"></i> Játékidő:</th>
+                                    <td id="playingTime"></td>
+                                </tr>
+                                <tr>
+                                    <th><i class="bi bi-person-badge-fill"></i> Korhatár:</th>
+                                    <td id="ageLimit"></td>
+                                </tr>
+                                <tr>
+                                    <th><i class="bi bi-tag-fill"></i> Kategória:</th>
+                                    <td id="category"></td>
+                                </tr>
+                                <tr>
+                                    <th><i class="bi bi-building"></i> Kiadó:</th>
+                                    <td id="publisher"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Címkék -->
+                        <div id="tagsContainer" class="mt-3">
+                            <h6>Címkék:</h6>
+                            <div id="tags"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Játék leírás-->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Leírás</h5>
+                        <p id="gameDescription" class="card-text">Betöltés...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!--YouTube videó-->
+        <div id="videoContainer" class="row mt-4" style="display: none;">
+            <div class="col-12">
+                <div class="card dark">
+                    <div class="card-body">
+                        <h5 class="card-title">Bemutató videó</h5>
+                        <div class="ratio ratio-16x9">
+                            <iframe id="videoIframe" src="" title="Bemutató videó" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script type="text/javascript">
+    window.gameId = '<%= gameId %>';
+</script>
+<script src="/js/tarsasjatek.js"></script>
