@@ -552,3 +552,39 @@ hr {
     font-size: 1.5rem;
 }
 
+.AISearchFloatingBtn {
+    border-top: 4px solid #28CAB5;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(19, 71, 110, 0.15);
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.AISearchFloatingBtn:hover {
+    transform: translateY(-5px);
+    border-top: 4px solid #13476E;
+    box-shadow: 0 4px 12px rgba(40, 202, 181, 0.3);
+}
+
+.AISearchFloatingBtn:hover a {
+    background-color: white;
+    color: #13476E;
+}
+
+.AISearchFloatingBtn i {
+    font-size: 1.5rem;
+    width: 100%;
+    display: inline-block;
+}
+
+.AISearchFloatingBtn span {
+    width: 100%;
+    display: inline-block;
+    font-size: 1rem;
+    font-weight: 500;
+}
+

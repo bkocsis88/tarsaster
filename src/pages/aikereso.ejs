@@ -1,0 +1,31 @@
+<section class="text-center py-5 background-gradient-primary">
+    <div class="container text-white">
+        <i class="bi bi-robot mb-3 main-icon"></i>
+        <h1 class="display-4 fw-bold mb-3">AI kereső</h1>
+        <p class="lead">Fotózd le a társasjátékodat, és mesterséges intelligenciánk másodpercek alatt felismeri! Részletes információkkal szolgálunk a játékról, gyorsan és egyszerűen.</p>
+    </div>
+</section>
+
+<% if (!session.userId) { %>
+<section class="text-center bg-light p-5 rounded mb-4">
+    <h2 class="mb-3">Keresés az AI segítségével</h2>
+    <p class="lead mb-4">A funkció használatához bejelentkezés szükséges</p>
+    <a href="/regisztracio" class="btn btn-primary btn-lg me-2">
+        <i class="bi bi-person-plus"></i> Regisztráció
+    </a>
+    <a href="/belepes" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-box-arrow-in-right"></i> Belépés
+    </a>
+</section>
+<% } else { %>
+<section class="text-center bg-light p-5 rounded mb-4">
+    <h2 class="mb-3">Üdv újra, <%= session.lastname %>!</h2>
+    <p class="lead mb-4">Folytathatod, ahol abbahagytad. Fedezd fel az új játékokat vagy kezeld gyűjteményedet!</p>
+    <a href="/tarsasjatekok" class="btn btn-primary btn-lg me-2">
+        <i class="bi bi-grid-3x3-gap"></i> Társasjátékok
+    </a>
+    <a href="/profil" class="btn btn-outline-primary btn-lg">
+        <i class="bi bi-person"></i> Profilom
+    </a>
+</section>
+<% } %>
