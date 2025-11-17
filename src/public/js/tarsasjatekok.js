@@ -229,9 +229,11 @@ document.addEventListener('DOMContentLoaded', function(){
             if (filterType === 'wishlist') {
                 button.style.color = '#dc3545';
                 icon.className = 'bi bi-heart-fill';
+                resetToggle(filterOwnedToggle); //ha a wishlist bekapcsol, kikapcsolja az owned
             } else {
                 button.style.color = '#198754';
                 icon.className = 'bi bi-check-circle-fill';
+                resetToggle(filterWishlistToggle);
             }
         } else {
             // Kikapcsol
@@ -342,6 +344,12 @@ document.addEventListener('DOMContentLoaded', function(){
             // Státusz frissítése
             game.is_in_wishlist = !game.is_in_wishlist;
 
+            //Ha wishlistre kerül, az owned-ről le kell szedni
+            if (game.is_in_wishlist && game.is_owned) {
+                const ownedBtn = button.closest('.card-footer').querySelector('.owned-btn');
+                await toggleOwned(boardgameId, game, ownedBtn);
+            }
+
             // Gomb frissítése
             if (game.is_in_wishlist) {
                 button.style.color = '#dc3545';
@@ -376,6 +384,12 @@ document.addEventListener('DOMContentLoaded', function(){
 
             // Státusz frissítése
             game.is_owned = !game.is_owned;
+
+            //Ha ownedre kerül, az wishlist-ről le kell szedni
+            if (game.is_owned && game.is_in_wishlist) {
+                const wishlistBtn = button.closest('.card-footer').querySelector('.wishlist-btn');
+                await toggleWishlist(boardgameId, game, wishlistBtn);
+            }
 
             // Gomb frissítése
             if (game.is_owned) {
