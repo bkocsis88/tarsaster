@@ -6,10 +6,11 @@
     </div>
 </section>
 
+<!-- Call to Action/olyan blokk, ami elvisz egy másik oldalra -->
 <% if (!session.userId) { %>
 <section class="text-center bg-light p-5 rounded mb-4">
-    <h2 class="mb-3">Keresés az AI segítségével</h2>
-    <p class="lead mb-4">A funkció használatához bejelentkezés szükséges</p>
+    <h2 class="mb-3">Keresés az AI segítségével?</h2>
+    <p class="lead mb-4">A funkció használatához bejelentkezés szükséges.</p>
     <a href="/regisztracio" class="btn btn-primary btn-lg me-2">
         <i class="bi bi-person-plus"></i> Regisztráció
     </a>
@@ -19,13 +20,47 @@
 </section>
 <% } else { %>
 <section class="text-center bg-light p-5 rounded mb-4">
-    <h2 class="mb-3">Üdv újra, <%= session.lastname %>!</h2>
-    <p class="lead mb-4">Folytathatod, ahol abbahagytad. Fedezd fel az új játékokat vagy kezeld gyűjteményedet!</p>
-    <a href="/tarsasjatekok" class="btn btn-primary btn-lg me-2">
-        <i class="bi bi-grid-3x3-gap"></i> Társasjátékok
-    </a>
-    <a href="/profil" class="btn btn-outline-primary btn-lg">
-        <i class="bi bi-person"></i> Profilom
-    </a>
+    <h2 class="mb-3">Készen állsz a keresésre?</h2>
+    <p class="lead mb-4">Válassz ki egy képet a galériádból, vagy készíts fotót közvetlenül a társasjátékodról!</p>
+    
+    <!-- Képfeltöltés és kamera gombok -->
+    <div class="d-grid gap-2 d-md-flex justify-content-md-center mb-3">
+        <!-- Képfeltöltés gomb -->
+        <input type="file" id="imageUpload" accept="image/png, image/jpeg, image/jpg" style="display: none;">
+        <button id="uploadBtn" class="btn btn-primary btn-lg">
+            <i class="bi bi-folder2-open"></i> Kép tallózása
+        </button>
+        
+        <!-- Kamera gomb -->
+        <input type="file" id="cameraCapture" accept="image/png, image/jpeg, image/jpg" capture="environment" style="display: none;">
+        <button id="cameraBtn" class="btn btn-outline-primary btn-lg">
+            <i class="bi bi-camera"></i> Fotó készítése
+        </button>
+    </div>
+    
+    <!-- Előnézeti terület -->
+    <div id="imagePreview" class="mt-4" style="display: none;">
+        <div class="ai-image-preview">
+            <img id="previewImage" src="" alt="Előnézet" class="img-fluid rounded shadow">
+        </div>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-3">
+            <button id="searchBtn" class="btn btn-success btn-lg">
+                <i class="bi bi-search"></i> Keresés indítása
+            </button>
+            <button id="cancelBtn" class="btn btn-secondary btn-lg">
+                <i class="bi bi-x-circle"></i> Mégse
+            </button>
+        </div>
+    </div>
+    
+    <!-- Eredmények terület -->
+    <div id="searchResults" class="mt-5" style="display: none;">
+        <div id="loadingSpinner" class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Keresés folyamatban...</span>
+        </div>
+        <div id="resultContent"></div>
+    </div>
 </section>
+
+<script src="/js/aikereso.js"></script>
 <% } %>
