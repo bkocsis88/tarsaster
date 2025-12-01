@@ -1,21 +1,24 @@
 <div class="container mt-3">
     <h2>Társasjátékok</h2>
     <p>Felvihetsz új játékokat és módosíthatod/törölheted a meglévőket.</p>
-    <table class="table">
-        <thead class="table-dark">
-            <tr>
-                <th style="width: 100px;">Kép</th>
-                <th>Név</th>
-                <th>Kategória</th>
-                <th>Játékosok száma</th>
-                <th class="text-end">
-                    <a href="/admin/ujtarsasjatek" class="btn btn-secondary"> Új társasjáték</a>
-                </th>  
-            </tr>
-        </thead>
-        <tbody id="table_tarsasjatekok">
-
-        </tbody>
-    </table>
+    <div class="mb-3 text-end">
+        <a href="/admin/ujtarsasjatek" class="btn btn-secondary"> Új társasjáték</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table boardgame-table">
+            <thead class="table-dark">
+                <tr>
+                    <th style="width: 100px;">Kép</th>
+                    <th>Név</th>
+                    <th>Kategória</th>
+                    <th>Játékosok száma</th>
+                    <th class="text-end">Műveletek</th>  
+                </tr>
+            </thead>
+            <tbody id="table_tarsasjatekok">
+    
+            </tbody>
+        </table>
+    </div>
 </div>
 <script src="/js/tarsasjatekkezelo.js"></script>

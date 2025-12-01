@@ -54,20 +54,20 @@ document.addEventListener('DOMContentLoaded', async function (e) {
             }
             //beszúr egy sor elemet a tömbbe
             rows. push(`
-                <tr>
-                    <td>
+                <tr class="boardgame-row">
+                    <td data-label="Kép">
                         <img src="${imageUrl}"
                              alt="${record.name}"
                              class="img-thumbnail"
                              style="width: 80px; height: 80px; object-fit: cover;"
                              onerror="this.src='/images/tarsasapp-logo1.png'">
                     </td>
-                    <td>${record.name}</td>
-                    <td>${record.category || 'N/A'}</td>
-                    <td>${record.player_count || 'N/A'}</td>
-                    <td class="text-end">
-                        <button type="button" class="btn btn-primary" onclick="navigateToEditPage(${record.boardgame_id})">Szerkesztés</button>
-                        <button type="button" class="btn btn-danger" onclick="deleteBoardgame(${record.boardgame_id})">Törlés</button>
+                    <td data-label="Név">${record.name}</td>
+                    <td data-label="Kategória">${record.category || 'N/A'}</td>
+                    <td data-label="Játékosok száma">${record.player_count || 'N/A'}</td>
+                    <td data-label="Műveletek" class="text-end">
+                        <button type="button" class="btn btn-primary btn-sm mt-2 btn-89" onclick="navigateToEditPage(${record.boardgame_id})">Szerkesztés</button>
+                        <button type="button" class="btn btn-danger btn-sm mt-2 btn-89" onclick="deleteBoardgame(${record.boardgame_id})">Törlés</button>
                     </td>
                 </tr>    
             `);

@@ -669,4 +669,95 @@ hr {
     text-align: center;
 }
 
+/* Userkezelő táblázat responzív megjelenítés */
+@media (max-width: 767px) {
+    .user-table thead {
+        display: none;
+    }
+    
+    .user-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .user-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .user-table tbody td:last-child {
+        border-bottom: none;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .user-table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: var(--bs-primary);
+        margin-right: 1rem;
+    }
+    
+    .user-table tbody td:last-child::before {
+        content: '';
+        margin-right: 0;
+    }
+}
 
+/* Társasjáték kezelő táblázat responzív megjelenítés */
+@media (max-width: 767px) {
+    .boardgame-table thead {
+        display: none;
+    }
+    
+    .boardgame-table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .boardgame-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border: none;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .boardgame-table tbody td:first-child {
+        justify-content: center;
+    }
+    
+    .boardgame-table tbody td:last-child {
+        border-bottom: none;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    
+    .boardgame-table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        color: var(--bs-primary);
+        margin-right: 1rem;
+    }
+    
+    .boardgame-table tbody td:first-child::before,
+    .boardgame-table tbody td:last-child::before {
+        content: '';
+        margin-right: 0;
+    }
+}
+.btn-89{
+    width: 89px;
+}

@@ -1,22 +1,24 @@
 <div class="container mt-3">
     <h2>Felhasználók</h2>
     <p>Felvihetsz új felhasználókat és módosíthatod a meglévőket.</p>
-    <table class="table">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Felhasználó név</th>
-                <th>Név</th>
-                <th>E-mail</th>
-                <th>Jogosultság</th>
-                <th class="text-end">
-                    <a href="/admin/ujfelhasznalo" class="btn btn-secondary"> Új felhasználó</a>
-                </th>  
-            </tr>
-        </thead>
-        <tbody id="table_felhasznalok">
-
-        </tbody>
-    </table>
+    <div class="mb-3 text-end">
+        <a href="/admin/ujfelhasznalo" class="btn btn-secondary"> Új felhasználó</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table user-table">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Felhasználó név</th>
+                    <th>Név</th>
+                    <th>E-mail</th>
+                    <th>Jogosultság</th>
+                    <th class="text-end">Műveletek</th>  
+                </tr>
+            </thead>
+            <tbody id="table_felhasznalok">
+            </tbody>
+        </table>
+    </div>
 </div>
 <script src="/js/userkezelo.js"></script>

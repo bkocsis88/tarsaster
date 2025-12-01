@@ -11,13 +11,17 @@ document.addEventListener('DOMContentLoaded', async function (e) {
         let sorok_html = "";
         for (let i = 0; i < data.length; i++){
             let record = data[i];
-            sorok_html += `<tr><td>${record.user_id}</td>
-                            <td>${record.username}</td>
-                            <td>${record.full_name}</td>
-                            <td>${record.email}</td>
-                            <td>${record.role}</td>
-                            <td class="text-end"><button type="button" class="btn btn-primary">Szerkesztés</button>
-                                <button type="button" class="btn btn-danger">Törlés</button></td></tr>`
+            sorok_html += `<tr class="user-row">
+                            <td data-label="ID" class="d-none d-md-table-cell">${record.user_id}</td>
+                            <td data-label="Felhasználó név">${record.username}</td>
+                            <td data-label="Név">${record.full_name}</td>
+                            <td data-label="E-mail">${record.email}</td>
+                            <td data-label="Jogosultság">${record.role}</td>
+                            <td data-label="Műveletek" class="text-end">
+                                <button type="button" class="btn btn-primary btn-sm mt-2 btn-89">Szerkesztés</button>
+                                <button type="button" class="btn btn-danger btn-sm mt-2 btn-89">Törlés</button>
+                            </td>
+                        </tr>`
         }
         table_body.innerHTML = sorok_html;
     }
