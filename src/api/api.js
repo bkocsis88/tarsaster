@@ -1,5 +1,4 @@
 const express = require('express');
-const mariadb = require('mariadb');
 const cors = require('cors');
 const session = require('express-session');
 const { body, validationResult } = require('express-validator');
@@ -7,6 +6,7 @@ const crypto = require('crypto');
 const api = express.Router();
 
 const sendPasswordResetEmail = require('./forget_pw.js');
+const { query } = require('./db');
 
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
@@ -23,32 +23,9 @@ api.use(session({
     }
 }));
 
-const pool = mariadb.createPool({
-    host: 'localhost',
-    user: 'dbuser',
-    password: 'bIwDEiL43kqb',
-    database: 'board_game',
-    connectionLimit: 5,
-    dateStrings: true
-});
-
 async function getUserById(userId) {
     const [user] = await query('SELECT user_id, username, full_name, email, location, birthdate FROM User WHERE user_id = ?', [userId]);
     return user || null;
-}
-
-async function query(sql, params = []) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const rows = await conn.query(sql, params);
-        return rows;
-    } catch (err) {
-        console.error(err);
-        throw err;
-    } finally {
-        if (conn) conn.release();
-    }
 }
 
 //Boardgame végpontok
