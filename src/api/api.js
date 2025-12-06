@@ -732,6 +732,96 @@ api.post('/users/change-password', isAuthenticated(), [
     }
 });
 
+//Felhasználó törlése (admin), de saját magát TILOS törölnie
+api.delete('/users/:id', isAuthenticated('admin'), async (req, res) => {
+    const userIdToDelete = req.params.id;
+    const loggedInUserId = req.session.userId;
+
+    try {
+        //Saját magát ne törölhesse az admin
+        if (parseInt(userIdToDelete) === parseInt(loggedInUserId)) {
+            return res.status(403).json({
+                error: 'Az admin nem törölheti saját magát.'
+            });
+        }
+
+        //Létezik-e a felhasználó?
+        const existing = await query(
+            'SELECT user_id FROM User WHERE user_id = ?',
+            [userIdToDelete]
+        );
+
+        if (existing.length === 0) {
+            return res.status(404).json({ error: 'Felhasználó nem található.' });
+        }
+
+        //Felhasználó törlése
+        await query('DELETE FROM User WHERE user_id = ?', [userIdToDelete]);
+
+        res.json({ message: 'Felhasználó sikeresen törölve.' });
+
+    } catch (err) {
+        console.error('Hiba a törlés során:', err);
+        res.status(500).json({ error: 'Szerverhiba a törlés közben.' });
+    }
+});
+
+// Felhasználó szerepének módosítása (admin), de saját szerepét NEM módosíthatja
+api.patch('/users/:id/role', isAuthenticated('admin'), async (req, res) => {
+    const userIdToModify = req.params.id;
+    const loggedInAdminId = req.session.userId;
+    const { role } = req.body;
+
+    // Csak user / admin lehet
+    if (!role || !['user', 'admin'].includes(role)) {
+        return res.status(400).json({
+            error: 'Érvénytelen szerep. Megengedett: user, admin.'
+        });
+    }
+
+    try {
+        //Admin ne módosíthassa a SAJÁT szerepét
+        if (parseInt(userIdToModify) === parseInt(loggedInAdminId)) {
+            return res.status(403).json({
+                error: 'Az admin nem módosíthatja a saját szerepét.'
+            });
+        }
+
+        //Létezik-e a felhasználó?
+        const existing = await query(
+            'SELECT user_id FROM User WHERE user_id = ?',
+            [userIdToModify]
+        );
+
+        if (existing.length === 0) {
+            return res.status(404).json({ error: 'Felhasználó nem található.' });
+        }
+
+        // Szerep frissítése
+        const result = await query(
+            'UPDATE UserRole SET role_name = ? WHERE user_id = ?',
+            [role, userIdToModify]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(500).json({
+                error: 'Nem sikerült módosítani a szerepet.'
+            });
+        }
+
+        res.json({
+            message: 'Szerep sikeresen módosítva.',
+            userId: userIdToModify,
+            newRole: role
+        });
+
+    } catch (err) {
+        console.error('Hiba a szerepmódosítás során:', err);
+        res.status(500).json({ error: 'Szerverhiba a szerepmódosítás közben.' });
+    }
+});
+
+
 // 🔐 Login endpoint
 api.post('/login', async (req, res) => {
     const { email, password } = req.body;
