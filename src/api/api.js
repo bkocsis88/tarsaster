@@ -450,6 +450,26 @@ api.delete('/boardgames/:boardgameId/images/:imageId', isAuthenticated('admin'),
     }
 });
 
+// Összes kategória lekérése
+api.get('/categories', async (req, res) => {
+    try {
+        // DISTINCT → egyedi kategóriák
+        // ORDER BY → ABC szerinti rendezés
+        const rows = await query(
+            'SELECT DISTINCT category FROM BoardGame WHERE category IS NOT NULL AND category <> "" ORDER BY category'
+        );
+
+        // Csak a kategória értékeket küldjük vissza tömbben
+        const categories = rows.map(row => row.category);
+
+        res.json(categories);
+
+    } catch (err) {
+        console.error('Hiba a kategóriák lekérdezésekor:', err);
+        res.status(500).json({ error: 'Szerverhiba a kategóriák lekérdezése közben.' });
+    }
+});
+
 
 // Társasjáték hozzáadása a kívánságlistához
 api.post('/wishlist/:boardgameId', isAuthenticated('user'), async (req, res) => {
