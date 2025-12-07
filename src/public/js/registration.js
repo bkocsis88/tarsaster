@@ -37,18 +37,18 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
     const location = document.getElementById('locationInput').value.trim();
     //adatküldés, egy kérés a szerver felé
     if (password!=password2 && password!= ""){
-        alert('A jelszó nem egyezik meg!');
+        await modalAlert( 'A jelszó nem egyezik meg!');
         return;
     }
 
     // frontend oldali ellenőrzés
     if (email == "" || username == "" || full_name == "" || birthdate == "" || location == ""){
-        alert('A mező kitöltése kötelező!');
+        await modalAlert( 'A mező kitöltése kötelező!');
         return;
     }
 
     if (email.indexOf("@") < 0 || email.lastIndexOf(".") < 0){
-        alert('Nem megfelelő e-mail cím formátum!');
+        await modalAlert( 'Nem megfelelő e-mail cím formátum!');
         return;
     }
 
@@ -61,19 +61,19 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
     //válaszkezelés
     if (response.ok) {
         const data = await response.json(); // backend oldali üzenet lekérése
-        alert(data.message);
+        await modalAlert( data.message);
         window.location.href = '/'; //url átirányítás kezdőlapra
     }
     else {
         if (response.status == 400){
             const data = await response.json(); 
-            alert('Hiba történt: ' + data);
+            await modalAlert( 'Hiba történt: ' + data);
         }
         else if (response.status == 409){
-            alert('Ezzel az e-mail címmel már létezik regisztráció!');
+            await modalAlert( 'Ezzel az e-mail címmel már létezik regisztráció!');
         }
         else {
-            alert('Szerverhiba történt!');
+            await modalAlert( 'Szerverhiba történt!');
         }
     }
 });

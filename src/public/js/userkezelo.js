@@ -26,6 +26,6 @@ document.addEventListener('DOMContentLoaded', async function (e) {
         table_body.innerHTML = sorok_html;
     }
     else {
-         alert('Szerverhiba történt!');
+         await modalAlert( 'Szerverhiba történt!');
     }
 });

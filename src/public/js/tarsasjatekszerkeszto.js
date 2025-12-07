@@ -127,7 +127,7 @@ document.getElementById('ModifyGameForm').addEventListener('submit', async funct
             });
             
             if (!imageUploadResponse.ok) {
-                alert('Hiba történt a képek feltöltése során!');
+                await modalAlert( 'Hiba történt a képek feltöltése során!');
                 return;
             }
         }
@@ -141,16 +141,16 @@ document.getElementById('ModifyGameForm').addEventListener('submit', async funct
                 method: 'DELETE'
             });
             if (!deleteResponse.ok) {
-                alert('Hiba történt a képek törlése során!');
+                await modalAlert( 'Hiba történt a képek törlése során!');
                 return;
             }
         }
         
-        alert('Sikeres játék módosítás!');
+        await modalAlert( 'Sikeres játék módosítás!');
         window.location.href = '/admin/tarsasjatekkezelo'; //url átirányítás kezdőlapra
     }
     else {
-        alert('Szerverhiba történt!');
+        await modalAlert( 'Szerverhiba történt!');
     }
 });
 
@@ -165,7 +165,7 @@ document.getElementById('imageInput').addEventListener('change', async function 
      const file = e.target.files[0];    //ez a fájl, base64 típusban
      if (file) {
         if (file.size > 10 * 1024 * 1024) {
-            alert('A kép mérete nem lehet nagyobb, mint 10MB!');
+            await modalAlert( 'A kép mérete nem lehet nagyobb, mint 10MB!');
             e.target.value = ''; //fájl törlése
             return;
         }

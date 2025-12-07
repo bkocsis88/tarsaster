@@ -11,13 +11,13 @@ async function deleteBoardgame(boardgameId){
     //válasz kezelése
     if (response.ok) {
         //törlés sikeres
-        alert('A társasjáték sikeresen törölve lett.');
+        await modalAlert( 'A társasjáték sikeresen törölve lett.');
         //újratöltjük az oldalt a frissített lista megjelenítéséhez
         window.location.reload();
     }
     else {
         //törlés sikertelen
-        alert('Hiba történt a társasjáték törlése során.');
+        await modalAlert( 'Hiba történt a társasjáték törlése során.');
     }
 }
 async function navigateToEditPage(boardgameId) {
@@ -76,6 +76,6 @@ document.addEventListener('DOMContentLoaded', async function (e) {
         table_body.innerHTML = rows.join(' ');
     }
     else {
-         alert('Szerverhiba történt!');
+         await modalAlert( 'Szerverhiba történt!');
     }
 });

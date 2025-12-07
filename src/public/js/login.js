@@ -16,7 +16,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
         window.location.href = '/'; //url átirányítás
     }
     else {
-        alert('Hibás belépési adatok!');
+        await modalAlert( 'Hibás belépési adatok!');
     }
     
 });

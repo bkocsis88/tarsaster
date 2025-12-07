@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fileInput = imageUpload.files.length > 0 ? imageUpload : cameraCapture;
         
         if (fileInput.files.length === 0) {
-            alert('Kérlek, válassz ki egy képet!');
+            await modalAlert( 'Kérlek, válassz ki egy képet!');
             return;
         }
 
@@ -319,7 +319,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Wishlist hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         } finally {
             button.disabled = false;
         }
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         } catch (error) {
             console.error('Owned hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         } finally {
             button.disabled = false;
         }
