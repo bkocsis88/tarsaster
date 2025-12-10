@@ -1,0 +1,52 @@
+<div class="container registrationbox">
+    <div class="d-flex justify-content-center">
+        <h1 class="mb-5">Új felhasználó</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        <p class="lead">Kérjük, add meg a regisztrációhoz szükséges adatokat.</p>
+    </div>
+    <form id="RegistrationForm">
+        <div class="mb-3">
+            <label for="emailInput" class="form-label">E-mail</label>
+            <input type="email" class="form-control" id="emailInput" placeholder="Add meg az e-mail címed">
+        </div>
+        <div class="mb-3">
+            <label for="userNameInput" class="form-label">Felhasználó név</label>
+            <input type="text" class="form-control" id="userNameInput" placeholder="Felhasználónév. Pl: mintanev123">
+        </div>
+        <div class="mb-3">
+            <label for="passwordInput1" class="form-label">Jelszó</label>
+            <input type="password" class="form-control" id="passwordInput1" placeholder="Jelszó. Pl: Mintajelszo12%">
+        </div>
+        <div class="mb-3">
+            <label for="passwordInput2" class="form-label">Jelszó</label>
+            <input type="password" class="form-control" id="passwordInput2" placeholder="Jelszó még egyszer">
+        </div>
+        <div class="alert alert-warning" role="alert">
+            Kérlek, biztonságos jelszót adj meg, ami tartalmaz kis- és nagybetűt, számot és speciális karaktert!
+        </div>
+        <div class="mb-3">
+            <label for="fullNameInput" class="form-label">Add meg a neved</label>
+            <input type="text" class="form-control" id="fullNameInput" placeholder="Név. Pl: Kis Béla">
+        </div>
+        <div class="mb-3">
+            <label for="birthdateInput" class="form-label">Születési dátumod</label>
+            <input type="date" class="form-control" id="birthdateInput" placeholder="Születési dátum">
+        </div>
+        <div class="mb-3">
+            <label for="locationInput" class="form-label">Lakhelyed</label>
+            <select id="locationInput" class="form-control">
+                <option value="">Válassz egy települést</option>
+                <option value="budapest">Budapest</option>
+                <option value="dánszentmiklos">Dánszentmiklós</option>
+                <option value="biatorbagy">Biatorbágy</option>
+                <option value="abony">Abony</option>
+            </select>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary m-2">Új felhasználó</button>
+            <button type="button" class="btn btn-danger m-2" id="btn_cancel">Mégse</button>
+        </div>
+    </form>
+</div>
+<script src="/js/ujfelhasznalo.js"></script>

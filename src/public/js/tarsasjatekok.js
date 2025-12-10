@@ -21,6 +21,7 @@ document.addEventListener('DOMContentLoaded', function(){
     //Toggle gombok
     const filterWishlistToggle = document.getElementById('filterWishlistToggle');
     const filterOwnedToggle = document.getElementById('filterOwnedToggle');
+    const shareAllWishlistBtn = document.getElementById('shareAllWishlistBtn');
 
     //Bejelentkezési állapot ellenőrzése
     async function checkLoginStatus() {
@@ -199,22 +200,32 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     // Toggle gombok kezelése
-    filterWishlistToggle.addEventListener('click', function(e) {
+    filterWishlistToggle.addEventListener('click', async function(e) {
         e.preventDefault();
         if (!isLoggedIn) {
-            alert('Ez a funkció csak bejelentkezett felhasználók számára érhető el. Kérjük, jelentkezz be!');
+            await modalAlert( 'Ez a funkció csak bejelentkezett felhasználók számára érhető el. Kérjük, jelentkezz be!');
             return;
         }
         toggleFilterButton(this);
     });
 
-    filterOwnedToggle.addEventListener('click', function(e) {
+    filterOwnedToggle.addEventListener('click', async function(e) {
         e.preventDefault();
         if (!isLoggedIn) {
-            alert('Ez a funkció csak bejelentkezett felhasználók számára érhető el. Kérjük, jelentkezz be!');
+            await modalAlert( 'Ez a funkció csak bejelentkezett felhasználók számára érhető el. Kérjük, jelentkezz be!');
             return;
         }
         toggleFilterButton(this);
+    });
+
+    // Share Wishlist gomb eseménykezelő
+    shareAllWishlistBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        if (!isLoggedIn) {
+            await modalAlert( 'Ez a funkció csak bejelentkezett felhasználók számára érhető el. Kérjük, jelentkezz be!');
+            return;
+        }
+        openShareWishlistModal();
     });
 
     // Toggle gomb állapot váltása
@@ -229,9 +240,11 @@ document.addEventListener('DOMContentLoaded', function(){
             if (filterType === 'wishlist') {
                 button.style.color = '#dc3545';
                 icon.className = 'bi bi-heart-fill';
+                resetToggle(filterOwnedToggle); //ha a wishlist bekapcsol, kikapcsolja az owned
             } else {
                 button.style.color = '#198754';
                 icon.className = 'bi bi-check-circle-fill';
+                resetToggle(filterWishlistToggle);
             }
         } else {
             // Kikapcsol
@@ -342,6 +355,12 @@ document.addEventListener('DOMContentLoaded', function(){
             // Státusz frissítése
             game.is_in_wishlist = !game.is_in_wishlist;
 
+            //Ha wishlistre kerül, az owned-ről le kell szedni
+            if (game.is_in_wishlist && game.is_owned) {
+                const ownedBtn = button.closest('.card-footer').querySelector('.owned-btn');
+                await toggleOwned(boardgameId, game, ownedBtn);
+            }
+
             // Gomb frissítése
             if (game.is_in_wishlist) {
                 button.style.color = '#dc3545';
@@ -355,7 +374,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         } catch (error) {
             console.error('Wishlist hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         } finally {
             button.disabled = false;
         }
@@ -377,6 +396,12 @@ document.addEventListener('DOMContentLoaded', function(){
             // Státusz frissítése
             game.is_owned = !game.is_owned;
 
+            //Ha ownedre kerül, az wishlist-ről le kell szedni
+            if (game.is_owned && game.is_in_wishlist) {
+                const wishlistBtn = button.closest('.card-footer').querySelector('.wishlist-btn');
+                await toggleWishlist(boardgameId, game, wishlistBtn);
+            }
+
             // Gomb frissítése
             if (game.is_owned) {
                 button.style.color = '#198754';
@@ -390,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function(){
 
         } catch (error) {
             console.error('Owned hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         } finally {
             button.disabled = false;
         }
@@ -398,5 +423,101 @@ document.addEventListener('DOMContentLoaded', function(){
     
     // Kezdeti betöltés
     loadBoardgames();
+
+    // Share Wishlist Modal megnyitása
+    function openShareWishlistModal() {
+        const modal = new bootstrap.Modal(document.getElementById('shareWishlistModal'));
+        document.getElementById('recipientEmail').value = '';
+        loadWishlistLinks();
+        modal.show();
+    }
+
+    // Kívánságlista linkek betöltése
+    async function loadWishlistLinks() {
+        const container = document.getElementById('wishlistLinksContainer');
+        
+        try {
+            const response = await fetch('/api/boardgames');
+            if (!response.ok) {
+                throw new Error('Hiba a kívánságlista betöltésekor');
+            }
+
+            const boardgames = await response.json();
+            const wishlistGames = boardgames.filter(game => game.is_in_wishlist === true);
+
+            if (wishlistGames.length === 0) {
+                container.innerHTML = '<p class="text-muted"><small>Nincsenek játékok a kívánságlistádban.</small></p>';
+                return;
+            }
+
+            let linksHTML = '<ul class="list-unstyled">';
+            wishlistGames.forEach(game => {
+                linksHTML += `<li><a href="/tarsasjatek/${game.boardgame_id}" target="_blank">${game.name}</a></li>`;
+            });
+            linksHTML += '</ul>';
+
+            container.innerHTML = linksHTML;
+        } catch (error) {
+            console.error('Hiba a kívánságlista linkek betöltésekor:', error);
+            container.innerHTML = '<p class="text-danger"><small>Hiba a kívánságlista betöltésekor.</small></p>';
+        }
+    }
+
+    // Email küldés gomb eseménykezelő
+    document.getElementById('sendEmailBtn').addEventListener('click', async function() {
+        const email = document.getElementById('recipientEmail').value.trim();
+        const subject = document.getElementById('emailSubject').value.trim();
+        const baseMessage = 'Szia! Szeretném megosztani veled a kívánságlistámat';
+
+        if (!email) {
+            await modalAlert( 'Kérjük, add meg az email címet!');
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            await modalAlert( 'Kérjük, add meg egy érvényes email címet!');
+            return;
+        }
+
+        try {
+            // Kívánságlista játékainak betöltése
+            const response = await fetch('/api/boardgames');
+            if (!response.ok) {
+                throw new Error('Hiba a kívánságlista betöltésekor');
+            }
+
+            const boardgames = await response.json();
+            const wishlistGames = boardgames.filter(game => game.is_in_wishlist === true);
+
+            // Üzenet összeállítása
+            let message = baseMessage + '\n\n';
+            
+            if (wishlistGames.length > 0) {
+                message += 'Kívánságlista játékai:\n';
+                wishlistGames.forEach(game => {
+                    const gameUrl = `${window.location.origin}/tarsasjatek/${game.boardgame_id}`;
+                    message += `- ${game.name}: ${gameUrl}\n`;
+                });
+            } else {
+                message += 'Jelenleg nincsenek játékok a kívánságlistámban.';
+            }
+
+            // mailto: link összeállítása és megnyitása
+            const mailtoLink = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+            window.location.href = mailtoLink;
+
+            // Modal bezárása
+            bootstrap.Modal.getInstance(document.getElementById('shareWishlistModal')).hide();
+        } catch (error) {
+            console.error('Email küldési hiba:', error);
+            await modalAlert( error.message || 'Hiba történt az email előkészítésekor');
+        }
+    });
+
+    // Email validáció
+    function validateEmail(email) {
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return re.test(email);
+    }
 
 });

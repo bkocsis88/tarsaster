@@ -12,17 +12,17 @@ document.getElementById('btn_newPassword').addEventListener('click', async funct
     });
 
     if (newPassword != newPassword2 ){
-        alert('A két jelszó nem egyezik meg!');
+        await modalAlert( 'A két jelszó nem egyezik meg!');
         return;
     }
 
     if (response.ok) {
         const data = await response.json();
-        alert(data.message);
+        await modalAlert( data.message);
         window.location.href = '/'; 
     }
     else {
         const data = await response.json(); 
-            alert('Hiba történt: ' + data.error);
+            await modalAlert( 'Hiba történt: ' + data.error);
     }
 })

@@ -62,7 +62,7 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
     if (response.ok) {
         const data = await response.json(); // backend oldali üzenet lekérése
         await modalAlert( data.message);
-        window.location.href = '/'; //url átirányítás kezdőlapra
+        window.location.href = '/admin/userkezeles'; //url átirányítás kezdőlapra
     }
     else {
         if (response.status == 400){
@@ -77,7 +77,7 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
         }
     }
 });
-
-document.getElementById('btn_login').addEventListener('click', async function (e) {
-     window.location.href = '/belepes';
+document.getElementById('btn_cancel').addEventListener('click', async function (e) {
+     window.location.href = '/admin/userkezeles';
 });
+

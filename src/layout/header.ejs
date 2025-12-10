@@ -4,37 +4,58 @@
         <a class="navbar-brand" href="/">
             <img src="/images/tarsasapp-logo1.png" alt="TársasApp" height="100">
         </a>
-        <div class="navbar-nav">
-            <a class="nav-link" href="/">Kezdőoldal</a>
-            <a class="nav-link" href="/tarsasjatekok">Társasjátékok</a>
-            <a class="nav-link" href="/rolunk">Rólunk</a>
-            <%
-            //Bejelentkezett felhasználó ellenőrzése
-            if (session==undefined || !session || !session.username) { %>
-                <a class="nav-link" href="/belepes">Belépés</a>
-            <% } %>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Kezdőoldal</a>
+                <a class="nav-link" href="/tarsasjatekok">Társasjátékok</a>
+                <a class="nav-link" href="/rolunk">Rólunk</a>
+                <%
+                //Bejelentkezett felhasználó ellenőrzése
+                if (session==undefined || !session || !session.username) { %>
+                    <a class="nav-link" href="/belepes">Belépés</a>
+                <% } 
+                else { 
+                    //Ha be van jelentkezve a felhasználó, jelenjen meg a profil menü
+                    //Session objektum ellenőrzése, hogy létezik-e
+                    //Desktop nézet: dropdown
+                    %>
+                    <div class="nav-item dropdown d-none d-lg-block">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle me-1"></i><%=session.lastname %>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/profil"><i class="bi bi-person me-2"></i>Profil</a></li>
+                            <li><a class="dropdown-item" href="/jelszomodositas"><i class="bi bi-key me-2"></i>Jelszó módosítás</a></li>
+                            <%if(session && session.role && session.role === 'admin') { %>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><h6 class="dropdown-header">Admin funkciók</h6></li>
+                                <li><a class="dropdown-item" href="/admin/tarsasjatekkezelo"><i class="bi bi-dice-5 me-2"></i>Társasjáték kezelés</a></li>
+                                <li><a class="dropdown-item" href="/admin/userkezeles"><i class="bi bi-people me-2"></i>Felhasználó kezelés</a></li>
+                            <% } %>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/kilepes"><i class="bi bi-box-arrow-right me-2"></i>Kijelentkezés</a></li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Mobil nézet: egyszerű lista -->
+                    <div class="d-lg-none mobile-user-menu">
+                        <div class="mobile-user-header">
+                            <i class="bi bi-person-circle me-2"></i><%=session.lastname %>
+                        </div>
+                        <a class="nav-link" href="/profil"><i class="bi bi-person me-2"></i>Profil</a>
+                        <a class="nav-link" href="/jelszomodositas"><i class="bi bi-key me-2"></i>Jelszó módosítás</a>
+                        <%if(session && session.role && session.role === 'admin') { %>
+                            <div class="mobile-admin-header">Admin funkciók</div>
+                            <a class="nav-link" href="/admin/tarsasjatekkezelo"><i class="bi bi-dice-5 me-2"></i>Társasjáték kezelés</a>
+                            <a class="nav-link" href="/admin/userkezeles"><i class="bi bi-people me-2"></i>Felhasználó kezelés</a>
+                        <% } %>
+                        <a class="nav-link text-danger" href="/kilepes"><i class="bi bi-box-arrow-right me-2"></i>Kijelentkezés</a>
+                    </div>
+                <% } %>
+            </div>  
         </div>
-        <%
-        //Ha be van jelentkezve a felhasználó, jelenjen meg a profil menü
-        //Session objektum ellenőrzése, hogy létezik-e
-        if (session!=undefined && session && session.username) { %>
-            <div class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Szia, <%=session.lastname %>!
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    <li><a class="dropdown-item" href="/profil">Profil</a></li>
-                    <li><a class="dropdown-item" href="/jelszomodositas">Jelszó módosítás</a></li>
-                    <%if(session && session.role && session.role === 'admin') { %>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/admin/tarsasjatekkezelo">Társasjáték kezelés</a></li>
-                        <li><a class="dropdown-item" href="/admin/userkezeles">Felhasználó kezelés</a></li>
-                        <li><hr class="dropdown-divider"></li>
-                    <% } %>
-                    <li><a class="dropdown-item" href="/kilepes">Kijelentkezés</a></li>
-                </ul>
-            </div>
-        <% } %>
     </div>
 </nav>

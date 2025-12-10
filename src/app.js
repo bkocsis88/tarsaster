@@ -63,6 +63,9 @@ app.get("/impresszum", (req, res) => {
 app.get("/sutikrol", (req, res) => {
   renderWithLayout(res, "pages/sutikrol", { title: "Sütikről" });
 });
+app.get("/aikereso", (req, res) => {
+  renderWithLayout(res, "pages/aikereso", { title: "AI kereső" });
+});
 app.get("/tarsasjatekok", (req, res) => {
   renderWithLayout(res, "pages/tarsasjatekok", { title: "Társasjátékok" });
 });
@@ -113,6 +116,10 @@ app.get("/kilepes", (req, res) => {
 const dbApi = require("./api/api");
 //API végpont URL-hez kötése, ide kell betenni az összes API-t, ami kell a lekérdezésekhez
 app.use("/api",dbApi);
+
+// AI végpont (Gemini képfelismerés)
+const aiGemini = require("./ai/gemini");
+app.use("/ai", aiGemini);
 
 // Szerver indítása (localhost): terminalba beírni: node app.js /elindul a localhoston a webkiszolgáló (linkre kattintani)
 app.listen(PORT, () => {
