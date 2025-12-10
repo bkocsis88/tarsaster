@@ -948,3 +948,37 @@ hr {
 .btn-89{
     width: 89px;
 }
+
+/* Caruousel stílusok felülírása */
+.carousel-control-next{
+    justify-content: right;
+    width: 2%;
+}
+.carousel-control-prev{
+    justify-content: left;
+    width: 2%;
+}
+#heroCarousel .carousel-control-prev-icon, 
+#heroCarousel .carousel-control-next-icon{
+    filter: invert(0);
+}
+
+.overlay-gray{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+.carousel-content{
+    background: linear-gradient(135deg, #13476E 0%, #28CAB5 100%);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    position: relative;
+}
+.carousel-content .row{
+    position: relative;
+    z-index: 1;
+}
