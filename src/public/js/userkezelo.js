@@ -31,25 +31,24 @@ document.addEventListener('DOMContentLoaded', async function (e) {
 });
 async function deleteUser(userId){
     //törlés megerősítése popup-ban
-    if (!confirm('Biztosan törölni szeretnéd ezt a felhasználót?')){
-        return;
-    }
-    //törlés kérés küldése a szervernek
-    const response = await fetch(`/api/users/${userId}`, {
-        method: 'DELETE',
-        headers: {'Content-Type': 'application/json'}
-    });
-    //válasz kezelése
-    if (response.ok) {
-        //törlés sikeres
-        await modalAlert( 'A felhasználó sikeresen törölve lett.');
-        //újratöltjük az oldalt a frissített lista megjelenítéséhez
-        window.location.reload();
-    }
-    else {
-        //törlés sikertelen
-        await modalAlert( 'Hiba történt a felhasználó törlése során.');
-    }
+    await modalConfirmation('Biztosan törölni szeretnéd ezt a felhasználót?', async () =>{
+        //törlés kérés küldése a szervernek
+        const response = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+         });
+         //válasz kezelése
+        if (response.ok) {
+            //törlés sikeres
+            await modalAlert( 'A felhasználó sikeresen törölve lett.');
+            //újratöltjük az oldalt a frissített lista megjelenítéséhez
+            window.location.reload();
+        }
+        else {
+            //törlés sikertelen
+            await modalAlert( 'Hiba történt a felhasználó törlése során.');
+        }
+    }); 
 }
 async function navigateToEditPage(userId) {
     //felhasználó szerkesztés oldalra navigálás
