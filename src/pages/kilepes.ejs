@@ -21,17 +21,17 @@
 
             if (response.ok) {
                 //Sikeres kijelentkezés
-                alert(data.message || 'Sikeres kijelentkezés!');
+                await modalAlert( data.message || 'Sikeres kijelentkezés!');
                 window.location.href = '/';
             }
             else {
                 //Hiba esetén
-                alert(data.error || 'Hiba történt a kijelentkezés során!');
+                await modalAlert( data.error || 'Hiba történt a kijelentkezés során!');
             }
         }
         catch (error) {
             console.error('Hiba: ',error);
-            alert('Kapcsolati hiba történt!');
+            await modalAlert( 'Kapcsolati hiba történt!');
         }
     });
 </script>

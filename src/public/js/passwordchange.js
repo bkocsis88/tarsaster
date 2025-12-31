@@ -11,11 +11,11 @@ document.getElementById('btn_changePassword').addEventListener('click', async fu
 
     if (response.ok) {
         const data = await response.json();
-        alert(data.message);
+        await modalAlert( data.message);
         window.location.href = '/'; 
     }
     else {
         const data = await response.json(); 
-            alert('Hiba történt: ' + data.error);
+            await modalAlert( 'Hiba történt: ' + data.error);
     }
 })

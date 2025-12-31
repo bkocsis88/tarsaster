@@ -11,20 +11,20 @@ document.getElementById('btn_forgetPassword').addEventListener('click', async fu
 
     if (response.ok) {
         const data = await response.json();
-        alert(data.message);
+        await modalAlert( data.message);
         window.location.href = '/'; 
     }
     else {
         if (response.status == 400){
             const data = await response.json(); 
-            alert('Hiba történt: ' + data.error);
+            await modalAlert( 'Hiba történt: ' + data.error);
         }
         else if (response.status == 500){
             const data = await response.json(); 
-            alert('Hiba történt: ' + data.error);
+            await modalAlert( 'Hiba történt: ' + data.error);
         }
         else {
-            alert('Ismeretlen hiba történt!');
+            await modalAlert( 'Ismeretlen hiba történt!');
         }
     }
 })

@@ -1,0 +1,29 @@
+{
+  "name": "TársasApp - Társasjáték Kereső",
+  "short_name": "TársasApp",
+  "description": "AI-alapú társasjáték kereső és gyűjteménykezelő alkalmazás",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#13476E",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment", "lifestyle"],
+  "screenshots": [],
+  "lang": "hu",
+  "dir": "ltr"
+}

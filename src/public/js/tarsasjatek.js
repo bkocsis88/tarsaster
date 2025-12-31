@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         catch (error) {
             console.error('Wishlist hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         }
         finally {
             wishlistBtn.disabled = false;
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         catch (error) {
             console.error('Owned hiba:', error);
-            alert(error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
+            await modalAlert( error.message || 'Hiba történt. Lehet, hogy be kell jelentkezned.');
         }
         finally {
             ownedBtn.disabled = false;
