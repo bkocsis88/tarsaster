@@ -184,7 +184,7 @@ api.get('/boardgames/:id', async (req, res) => {
     }
 });
 
-api.post('/boardgames', async (req, res) => {
+api.post('/boardgames', isAuthenticated('admin'), async (req, res) => {
     const { name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags, description } = req.body;
     try {
         const result = await query(`INSERT INTO BoardGame (name, age_limit, player_count, category, playing_time_in_minutes, publisher, video_url, tags, description)

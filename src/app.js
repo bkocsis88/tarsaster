@@ -121,6 +121,12 @@ app.use("/api",dbApi);
 const aiGemini = require("./ai/gemini");
 app.use("/ai", aiGemini);
 
+// Swagger UI
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./openapi.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 // Szerver indítása (localhost): terminalba beírni: node app.js /elindul a localhoston a webkiszolgáló (linkre kattintani)
 app.listen(PORT, () => {
   console.log(`Szerver elindult: http://localhost:${PORT}`);

@@ -1,0 +1,352 @@
+openapi: 3.0.3
+
+info:
+  title: BoardGame API
+  version: 1.0.0
+  description: Session-based REST API (express-session, cookies)
+
+servers:
+  - url: http://localhost:3000/api
+
+# =====================
+# 🔐 AUTH
+# =====================
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+
+  schemas:
+
+    BoardGame:
+      type: object
+      properties:
+        boardgame_id: { type: integer }
+        name: { type: string }
+        age_limit: { type: integer }
+        player_count: { type: integer }
+        category: { type: string }
+        playing_time_in_minutes: { type: integer }
+        publisher: { type: string, nullable: true }
+        video_url: { type: string, nullable: true }
+        tags: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        is_in_wishlist: { type: boolean }
+        is_owned: { type: boolean }
+
+    User:
+      type: object
+      properties:
+        user_id: { type: integer }
+        username: { type: string }
+        full_name: { type: string }
+        email: { type: string }
+        location: { type: string, nullable: true }
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        role:
+          type: string
+          enum: [admin, user]
+
+# =====================
+# 🔐 DEFAULT SECURITY
+# =====================
+security:
+  - cookieAuth: []
+
+# =====================
+# 🚏 PATHS
+# =====================
+paths:
+
+  # -------- AUTH --------
+  /login:
+    post:
+      security: []
+      summary: Login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Logged in
+
+  /logout:
+    post:
+      summary: Logout
+      responses:
+        '200': { description: Logged out }
+
+  /register:
+    post:
+      security: []
+      summary: Register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, full_name, password]
+              properties:
+                username: { type: string }
+                email: { type: string }
+                full_name: { type: string }
+                password: { type: string }
+                birthdate: { type: string, format: date }
+                location: { type: string }
+      responses:
+        '201': { description: Registered }
+
+  # -------- BOARDGAMES --------
+  /boardgames:
+    get:
+      security: []
+      summary: List board games (filters supported)
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: minPlayers
+          schema: { type: integer }
+        - in: query
+          name: maxPlayers
+          schema: { type: integer }
+        - in: query
+          name: ageLimit
+          schema: { type: integer }
+        - in: query
+          name: description
+          schema: { type: string }
+        - in: query
+          name: isInWishlist
+          schema: { type: boolean }
+        - in: query
+          name: isOwned
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Board games
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/BoardGame' }
+
+    post:
+      summary: Create board game
+      description: "**Requires admin**"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BoardGame' }
+      responses:
+        '201': { description: Created }
+
+  /boardgames/{id}:
+    get:
+      security: []
+      summary: Get board game
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BoardGame' }
+
+    patch:
+      summary: Update board game
+      description: "**Requires admin**"
+      responses:
+        '200': { description: Updated }
+
+    delete:
+      summary: Delete board game
+      description: "**Requires admin**"
+      responses:
+        '200': { description: Deleted }
+
+  # -------- IMAGES --------
+  /boardgames/{id}/images:
+    post:
+      summary: Upload images
+      description: "**Requires admin**"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201': { description: Uploaded }
+
+    get:
+      security: []
+      summary: List images
+      responses:
+        '200': { description: Image metadata }
+
+  /boardgames/{boardgameId}/images/{imageId}:
+    get:
+      security: []
+      summary: Get image binary
+      responses:
+        '200':
+          description: Image binary
+
+    delete:
+      summary: Delete image
+      description: "**Requires admin**"
+      responses:
+        '200': { description: Deleted }
+
+  # -------- CATEGORIES --------
+  /categories:
+    get:
+      security: []
+      summary: List categories
+      responses:
+        '200':
+          description: Categories
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+
+  # -------- WISHLIST --------
+  /wishlist/{boardgameId}:
+    post:
+      summary: Add to wishlist
+      description: "**Requires user**"
+      responses:
+        '201': { description: Added }
+
+    delete:
+      summary: Remove from wishlist
+      description: "**Requires user**"
+      responses:
+        '200': { description: Removed }
+
+  # -------- OWNED --------
+  /owned/{boardgameId}:
+    post:
+      summary: Add owned game
+      description: "**Requires user**"
+      responses:
+        '201': { description: Added }
+
+    delete:
+      summary: Remove owned game
+      description: "**Requires user**"
+      responses:
+        '200': { description: Removed }
+
+  # -------- USERS --------
+  /users:
+    get:
+      summary: List users
+      description: "**Requires admin**"
+      responses:
+        '200': { description: Users }
+
+    post:
+      summary: Create user
+      description: "**Requires admin**"
+      responses:
+        '201': { description: Created }
+
+  /users/{id}:
+    get:
+      summary: Get user
+      description: "**User: self | Admin: any**"
+      responses:
+        '200': { description: User }
+
+    patch:
+      summary: Update user
+      description: "**User: self | Admin: any**"
+      responses:
+        '200': { description: Updated }
+
+    delete:
+      summary: Delete user
+      description: "**Requires admin (not self)**"
+      responses:
+        '200': { description: Deleted }
+
+  /users/{id}/role:
+    patch:
+      summary: Change role
+      description: "**Requires admin (not self)**"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [admin, user]
+      responses:
+        '200': { description: Role changed }
+
+  /users/change-password:
+    post:
+      summary: Change password
+      description: "**Requires login**"
+      responses:
+        '200': { description: Changed }
+
+  /profile:
+    get:
+      summary: Get own profile
+      description: "**Requires user**"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+
+  # -------- PASSWORD RESET --------
+  /forgot-password:
+    post:
+      security: []
+      summary: Request password reset
+      responses:
+        '200': { description: Email sent }
+
+  /reset-password:
+    post:
+      security: []
+      summary: Reset password
+      responses:
+        '200': { description: Password reset }
