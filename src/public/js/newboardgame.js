@@ -85,6 +85,37 @@ document.getElementById('btn_cancel').addEventListener('click', async function (
 document.getElementById('btn_addImage').addEventListener('click', async function (e) {
      document.getElementById('imageInput').click();
 });
+document.getElementById('btn_aiRecognition').addEventListener('click', async function (e) {
+    let kepBase64 = document.querySelectorAll("#imagePreviews img")[0].attributes["data-base64"].value;
+    let mimeType = document.querySelectorAll("#imagePreviews img")[0].attributes["data-mimetype"].value;
+    if (!kepBase64){
+        await modalAlert('Először tölts fel egy képet!');
+        return;
+    }
+     await fetch('/ai/recognizeboardgameimages', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({imageBase64: kepBase64, mimeType: mimeType})
+     }).then(async (response) => {
+        if (response.ok) {
+            const data = await response.json()  ;
+            document.getElementById('nameInput').value = data.gameData.Name;
+            document.getElementById('ageLimitInput').value = data.gameData.AgeLimit;
+            document.getElementById('descriptionInput').value = data.gameData.Description;
+            document.getElementById('playerCountInput').value = data.gameData.PlayerCount;
+            document.getElementById('playingTimeInMinutesInput').value = data.gameData.PlayingTimeInMinutes;
+            document.getElementById('publisherInput').value = data.gameData.Publisher;
+            await modalAlert( 'Az AI felismerte a társasjáték adatait ');
+        } else {
+            const errorData = await response.json();
+            let errorMessage = errorData.error || 'Ismeretlen hiba történt a felismerés során.';
+            await modalAlert( errorMessage);
+        }
+    }).catch(async (error) => {
+        console.error('Hiba a felismerés során:', error);
+        await modalAlert( 'Hiba történt a felismerés során: ' + error.message); 
+    });
+});
 document.getElementById('imageInput').addEventListener('change', async function (e) {
      const file = e.target.files[0];    //ez a fájl, base64 típusban
      if (file) {

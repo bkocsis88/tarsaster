@@ -17,6 +17,9 @@ const PORT = 3090;
 //static függvény előállít valami köztes "teret", path.jon előállítja az elérési utat
 app.use(express.static(path.join(__dirname, "public")))
 
+//JSON body-k feldolgozása az appban
+app.use(express.json({limit: '50mb'}));
+
 // EJS beállítása, azért felel, hogy a html-ben javascriptet lehessen használni, úgy használjuk, mint a php-ban
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname)); // fontos: így layout/pages is látszik
