@@ -23,26 +23,28 @@
     </div>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #13476E 0%, #1a5a8a 100%);">
+            <div class="carousel-content text-white p-5 rounded" style="background-image: url('/images/main_1.jpeg');">
+                <div class="overlay-gray"></div>
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h1 class="display-4 fw-bold">Üdvözlünk a TársasApp-ban!</h1>
                         <p class="lead">A társasjáték szerelmesek közösségi platformja. Fedezd fel, gyűjtsd és oszd meg kedvenc játékaidat!</p>
                         <% if (!session.user) { %>
-                            <a href="/regisztracio" class="btn btn-light btn-lg me-2">Regisztráció</a>
-                            <a href="/belepes" class="btn btn-outline-light btn-lg">Belépés</a>
+                            <a href="/regisztracio" class="btn btn-light btn-lg me-2 mt-2">Regisztráció</a>
+                            <a href="/belepes" class="btn btn-outline-light btn-lg mt-2">Belépés</a>
                         <% } else { %>
-                            <a href="/tarsasjatekok" class="btn btn-light btn-lg">Böngészd a játékokat</a>
+                            <a href="/tarsasjatekok" class="btn btn-light btn-lg mt-2">Böngészd a játékokat</a>
                         <% } %>
                     </div>
                     <div class="col-md-4 text-center">
-                        <i class="bi bi-dice-5-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                        <!--<i class="bi bi-dice-5-fill" style="font-size: 120px; opacity: 0.3;"></i>-->
                     </div>
                 </div>
             </div>
         </div>
         <div class="carousel-item">
-            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #28CAB5 0%, #22b09f 100%);">
+            <div class="carousel-content text-white p-5 rounded" style="background-image: url('/images/epitsd_a_gyujtemenyed.jpeg');">
+                <div class="overlay-gray"></div>
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2 class="display-5 fw-bold">Építsd gyűjteményedet!</h2>
@@ -54,13 +56,14 @@
                         <% } %>
                     </div>
                     <div class="col-md-4 text-center">
-                        <i class="bi bi-collection-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                       <!-- <i class="bi bi-collection-fill" style="font-size: 120px; opacity: 0.3;"></i>-->
                     </div>
                 </div>
             </div>
         </div>
         <div class="carousel-item">
-            <div class="carousel-content text-white p-5 rounded" style="background: linear-gradient(135deg, #13476E 0%, #28CAB5 100%);">
+            <div class="carousel-content text-white p-5 rounded" style="background-image: url('/images/ai_kereses.jpeg');">
+                <div class="overlay-gray"></div>
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h2 class="display-5 fw-bold">AI-alapú felismerés</h2>
@@ -72,7 +75,7 @@
                         <% } %>
                     </div>
                     <div class="col-md-4 text-center">
-                        <i class="bi bi-camera-fill" style="font-size: 120px; opacity: 0.3;"></i>
+                       <!-- <i class="bi bi-camera-fill" style="font-size: 120px; opacity: 0.3;"></i>-->
                     </div>
                 </div>
             </div>
@@ -166,10 +169,10 @@
 <section class="text-center bg-light p-5 rounded mb-4">
     <h2 class="mb-3">Készen állsz a csatlakozásra?</h2>
     <p class="lead mb-4">Regisztrálj most és kezdd el építeni társasjáték gyűjteményedet!</p>
-    <a href="/regisztracio" class="btn btn-primary btn-lg me-2">
+    <a href="/regisztracio" class="btn btn-primary btn-lg me-2 mt-2">
         <i class="bi bi-person-plus"></i> Regisztráció
     </a>
-    <a href="/belepes" class="btn btn-outline-primary btn-lg">
+    <a href="/belepes" class="btn btn-outline-primary btn-lg mt-2">
         <i class="bi bi-box-arrow-in-right"></i> Belépés
     </a>
 </section>

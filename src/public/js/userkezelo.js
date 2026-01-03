@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', async function (e) {
                             <td data-label="E-mail">${record.email}</td>
                             <td data-label="Jogosultság">${record.role}</td>
                             <td data-label="Műveletek" class="text-end">
-                                <button type="button" class="btn btn-primary btn-sm mt-2 btn-89">Szerkesztés</button>
-                                <button type="button" class="btn btn-danger btn-sm mt-2 btn-89">Törlés</button>
+                                <button type="button" class="btn btn-primary btn-sm mt-2 btn-89" onclick="navigateToEditPage(${record.user_id})">Szerkesztés</button>
+                                <button type="button" class="btn btn-danger btn-sm mt-2 btn-89" onclick="deleteUser(${record.user_id})">Törlés</button>
                             </td>
                         </tr>`
         }
@@ -29,3 +29,28 @@ document.addEventListener('DOMContentLoaded', async function (e) {
          await modalAlert( 'Szerverhiba történt!');
     }
 });
+async function deleteUser(userId){
+    //törlés megerősítése popup-ban
+    await modalConfirmation('Biztosan törölni szeretnéd ezt a felhasználót?', async () =>{
+        //törlés kérés küldése a szervernek
+        const response = await fetch(`/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/json'}
+         });
+         //válasz kezelése
+        if (response.ok) {
+            //törlés sikeres
+            await modalAlert( 'A felhasználó sikeresen törölve lett.');
+            //újratöltjük az oldalt a frissített lista megjelenítéséhez
+            window.location.reload();
+        }
+        else {
+            //törlés sikertelen
+            await modalAlert( 'Hiba történt a felhasználó törlése során.');
+        }
+    }); 
+}
+async function navigateToEditPage(userId) {
+    //felhasználó szerkesztés oldalra navigálás
+    window.location.href = `/admin/userkezeles/${userId}`;
+}

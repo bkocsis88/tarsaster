@@ -34,3 +34,51 @@ async function modalAlert( message, title = 'Figyelmeztetés') {
         bootstrapModal.show();
     });
 }
+async function modalConfirmation( message, yesCallBack, noCallBack, title = 'Biztosan?') {
+    return new Promise((resolve) => {
+        //Modal elem div létrehozása js segítségével
+        const modalDiv = document.createElement('div');
+        //Beállítjuk a modal osztályokat (modal: ablak, fade: animáció) és id-t
+        modalDiv.className = 'modal fade';
+        modalDiv.id = 'alertModal';
+        //Modális ablak html tartalma
+        modalDiv.innerHTML = `
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="alertModalLabel">${title}</h5>
+                        <button type="button" class="btn-close" id="closeBtn" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">${message}</div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" id="yesBtn" data-bs-dismiss="modal">Igen</button>
+                        <button type="button" class="btn btn-secondary" id="noBtn" data-bs-dismiss="modal">Nem</button>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        //Meghívjuk a bootstrap modal funkciót a létrehozott div-re
+        const bootstrapModal = new bootstrap.Modal(modalDiv);
+
+        //Gombok kezelése
+        const yesBtn = modalDiv.querySelector('#yesBtn');
+
+        //Igen gomb
+        yesBtn.addEventListener('click', () => {
+            if (yesCallBack && typeof yesCallBack === 'function'){
+                yesCallBack();
+            }
+        },
+        {once: true});
+
+        //Amikor bezárjuk a modalt, resolve-oljuk a Promise-t
+        modalDiv.addEventListener('hidden.bs.modal', () => {
+            resolve();
+        },
+        {once: true});
+        
+        //Megjelenítjük a modális ablakot
+        bootstrapModal.show();
+    });
+}

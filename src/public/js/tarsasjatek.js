@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Játék adatainak megjelenítése
         document.getElementById('gameName').textContent = game.name;
-        document.getElementById('gameDescription').textContent = game.description || 'Nincs leírás';
+        document.getElementById('gameDescription').innerHTML = game.description.replace(/\n/g, ' <br> ') || 'Nincs leírás';
         document.getElementById('playerCount').textContent = game.player_count || 'N/A';
         document.getElementById('playingTime').textContent = game.playing_time_in_minutes ? `${game.playing_time_in_minutes} perc` : 'N/A';
         document.getElementById('ageLimit').textContent = game.age_limit ? `${game.age_limit}+ év` : 'N/A';

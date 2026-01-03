@@ -88,7 +88,9 @@ app.get("/admin/tarsasjatekkezelo/:id", (req, res) => {
 app.get("/admin/userkezeles", (req, res) => {
   renderWithLayout(res, "pages/admin/userkezeles", { title: "Felhasználó kezelő" });
 });
-
+app.get("/admin/userkezeles/:id", (req, res) => {
+  renderWithLayout(res, "pages/admin/userszerkeszto", { title: "Felhasználó szerkesztő", userId: req.params.id});
+});
 app.get("/admin/ujtarsasjatek", (req, res) => {
   renderWithLayout(res, "pages/admin/ujtarsasjatek", { title: "Új társasjáték felvétele" });
 });

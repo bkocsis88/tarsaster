@@ -70,7 +70,7 @@ CREATE TABLE UserRole (
     CHECK (
         role_name IN ('admin', 'user')
     ),
-    FOREIGN KEY (user_id) REFERENCES User (user_id)
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE PasswordResetToken (
