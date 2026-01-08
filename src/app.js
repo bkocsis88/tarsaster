@@ -109,7 +109,7 @@ app.get("/jelszomodositas", (req, res) => {
 app.get("/elfelejtettjelszo", (req, res) => {
   renderWithLayout(res, "pages/elfelejtettjelszo", { title: "Elfelejtett jelszó" });
 });
-app.get("/ujjelszo", (req, res) => {
+app.get("/reset-password", (req, res) => {
   renderWithLayout(res, "pages/ujjelszo", { title: "Új jelszó" });
 });
 app.get("/kilepes", (req, res) => {

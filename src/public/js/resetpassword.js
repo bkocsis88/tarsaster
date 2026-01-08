@@ -5,7 +5,7 @@ document.getElementById('btn_newPassword').addEventListener('click', async funct
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get("token");
 
-    const response = await fetch('/api/users/reset-password',{
+    const response = await fetch('/api/reset-password',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({newPassword, token})
