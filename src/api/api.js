@@ -7,6 +7,7 @@ const api = express.Router();
 
 const sendPasswordResetEmail = require('./forget_pw.js');
 const { query } = require('./db');
+const sendGenericEmail = require('./sendGenericEmail');
 
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
@@ -975,6 +976,46 @@ api.post('/reset-password', async (req, res) => {
         res.status(500).json({ message: "Szerverhiba" });
     }
 
+});
+
+// Email küldése regisztrált felhasználónak
+api.post('/send-email', isAuthenticated('user'), async (req, res) => {
+    const { email, subject, html } = req.body;
+
+    // Kötelező inputok ellenőrzése
+    if (!email || !subject || !html) {
+        return res.status(400).json({
+            error: 'Email, tárgy és HTML tartalom megadása kötelező.'
+        });
+    }
+
+    try {
+        // Ellenőrizzük, hogy létezik-e a felhasználó
+        const users = await query(
+            'SELECT user_id FROM User WHERE email = ?',
+            [email]
+        );
+
+        // Ha nem létezik → NEM áruljuk el
+        if (users.length === 0) {
+            return res.json({
+                message: 'Ha az email cím regisztrálva van, az üzenet elküldésre került.'
+            });
+        }
+
+        // Email küldése
+        await sendGenericEmail(email, subject, html);
+
+        res.json({
+            message: 'Ha az email cím regisztrálva van, az üzenet elküldésre került.'
+        });
+
+    } catch (err) {
+        console.error('Hiba az email küldése során:', err);
+        res.status(500).json({
+            error: 'Szerverhiba az email küldése közben.'
+        });
+    }
 });
 
 function isAuthenticated(requiredRole = null) {

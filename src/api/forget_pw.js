@@ -1,18 +1,8 @@
-const nodemailer = require('nodemailer');
+const transporter = require('./mailer');
 
 // Jelszó visszaállítás e-mail küldése
 async function sendPasswordResetEmail(userEmail, resetToken) {
     try {
-        // SMTP transporter létrehozása Gmail App Password-del
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'tarsaster2025@gmail.com',   // a feladói Gmail címed
-                pass: 'tdocmzmvflbshtop'          // Gmail App Password
-            },
-        });
-
-        // Visszaállítási link (példa)
         const resetLink = `http://localhost/reset-password?token=${resetToken}`;
 
         // E-mail tartalom
