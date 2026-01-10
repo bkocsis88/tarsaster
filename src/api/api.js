@@ -939,7 +939,7 @@ api.post('/forgot-password', async (req, res) => {
             [userId, resetToken, expirationAt])
 
         // Email küldése
-        await sendPasswordResetEmail(email, resetToken);
+        await sendPasswordResetEmail(req, email, resetToken);
 
         res.json({ message: 'Jelszó visszaállítási email elküldve.' });
     } catch (error) {

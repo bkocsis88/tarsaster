@@ -1,9 +1,10 @@
 const transporter = require('./mailer');
 
 // Jelszó visszaállítás e-mail küldése
-async function sendPasswordResetEmail(userEmail, resetToken) {
+async function sendPasswordResetEmail(req, userEmail, resetToken) {
     try {
-        const resetLink = `http://localhost/reset-password?token=${resetToken}`;
+        const baseUrl = `${req.protocol}://${req.get('host')}`;
+        const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
 
         // E-mail tartalom
         const mailOptions = {
