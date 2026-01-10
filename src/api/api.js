@@ -886,6 +886,24 @@ api.post('/register', [
             'INSERT INTO UserRole (user_id, role_name) VALUES (?, ?)', [users[0].user_id, 'user']
         )
 
+        // 📧 SIKERES REGISZTRÁCIÓS EMAIL (nem blokkoló)
+        try {
+            const subject = 'Sikeres regisztráció – TársasApp';
+            const html = `
+                <h2>Kedves ${full_name}!</h2>
+                <p>Sikeresen regisztráltál a <strong>TársasApp</strong> rendszerébe 🎉</p>
+                <p>Felhasználóneved: <strong>${username}</strong></p>
+                <p>Most már be tudsz jelentkezni és elkezdheted a társasjátékok böngészését.</p>
+                <br>
+                <p>Üdvözlettel,<br><strong>TársasApp csapata</strong></p>
+            `;
+
+            await sendGenericEmail(email, subject, html);
+        } catch (mailErr) {
+            console.error('Regisztrációs email küldése sikertelen:', mailErr);
+            // NEM dobunk hibát
+        }
+
         res.status(201).json({ message: 'Sikeres regisztráció!' });
     } catch (err) {
         console.error(err);
