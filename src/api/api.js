@@ -9,6 +9,9 @@ const sendPasswordResetEmail = require('./forget_pw.js');
 const { query } = require('./db');
 const sendGenericEmail = require('./sendGenericEmail');
 
+const bcrypt = require('bcrypt');
+const SALT_ROUNDS = 12;
+
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
 api.use(express.json());
@@ -638,9 +641,10 @@ api.patch('/users/:id', isAuthenticated('user'), async (req, res) => {
 api.post('/users', isAuthenticated('admin'), async (req, res) => {
     const { username, email, full_name, password, birthdate, location } = req.body;
     try {
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
         const result = await query(`INSERT INTO User (username, email, full_name, password, birthdate, location)
       VALUES (?, ?, ?, ?, ?, ?)`,
-            [username, email, full_name, password, birthdate, location]);
+            [username, email, full_name, hashedPassword, birthdate, location]);
         res.status(201).json({ id: result.insertId });
     } catch (err) {
         res.status(500).json({ error: 'Hiba a felhasználó létrehozásakor.' });
@@ -695,11 +699,14 @@ api.post('/users/change-password', isAuthenticated(), [
 
         if (!user) return res.status(404).json({ error: 'Felhasználó nem található.' });
 
-        if (user.password !== oldPassword) {
+        const isOldPasswordValid = await bcrypt.compare(oldPassword, user.password);
+        if (!isOldPasswordValid) {
             return res.status(401).json({ error: 'Hibás a régi jelszó!' });
         }
 
-        await query('UPDATE User SET password = ? WHERE user_id = ?', [newPassword, userId]);
+        const newHashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
+        await query('UPDATE User SET password = ? WHERE user_id = ?', [newHashedPassword, userId]);
 
         //Visszajelzés a kliensnek
         res.json({ message: 'Sikeres módosítás!' });
@@ -814,7 +821,7 @@ api.post('/login', async (req, res) => {
         return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
     }
 
-    const isPasswordValid = password === user.password;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
         return res.status(401).json({ error: 'Hibás e-mail vagy jelszó.' });
     }
@@ -872,10 +879,12 @@ api.post('/register', [
             return res.status(409).json({ error: 'Felhasználónév vagy email már létezik' });
         }
 
+        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+
         await query(
             `INSERT INTO User (username, email, full_name, password, birthdate, location)
        VALUES (?, ?, ?, ?, ?, ?)`,
-            [username, email, full_name, password, birthdate || null, location || null]
+            [username, email, full_name, hashedPassword, birthdate || null, location || null]
         );
 
         const users = await query(
@@ -977,9 +986,11 @@ api.post('/reset-password', async (req, res) => {
         }
 
         // 3. Felhasználó jelszavának frissítése
+        const newHashedPassword = await bcrypt.hash(newPassword, SALT_ROUNDS);
+
         await query(
             `UPDATE User SET password = ? WHERE user_id = ?`,
-            [newPassword, resetToken.user_id]
+            [newHashedPassword, resetToken.user_id]
         );
 
         // 4. Token megjelölése felhasználtnak
