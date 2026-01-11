@@ -7,6 +7,7 @@ const api = express.Router();
 
 const sendPasswordResetEmail = require('./forget_pw.js');
 const { query } = require('./db');
+const sendGenericEmail = require('./sendGenericEmail');
 
 api.use(cors());
 api.use(express.urlencoded({ extended: true }));
@@ -885,6 +886,24 @@ api.post('/register', [
             'INSERT INTO UserRole (user_id, role_name) VALUES (?, ?)', [users[0].user_id, 'user']
         )
 
+        // 📧 SIKERES REGISZTRÁCIÓS EMAIL (nem blokkoló)
+        try {
+            const subject = 'Sikeres regisztráció – TársasApp';
+            const html = `
+                <h2>Kedves ${full_name}!</h2>
+                <p>Sikeresen regisztráltál a <strong>TársasApp</strong> rendszerébe 🎉</p>
+                <p>Felhasználóneved: <strong>${username}</strong></p>
+                <p>Most már be tudsz jelentkezni és elkezdheted a társasjátékok böngészését.</p>
+                <br>
+                <p>Üdvözlettel,<br><strong>TársasApp csapata</strong></p>
+            `;
+
+            await sendGenericEmail(email, subject, html);
+        } catch (mailErr) {
+            console.error('Regisztrációs email küldése sikertelen:', mailErr);
+            // NEM dobunk hibát
+        }
+
         res.status(201).json({ message: 'Sikeres regisztráció!' });
     } catch (err) {
         console.error(err);
@@ -920,7 +939,7 @@ api.post('/forgot-password', async (req, res) => {
             [userId, resetToken, expirationAt])
 
         // Email küldése
-        await sendPasswordResetEmail(email, resetToken);
+        await sendPasswordResetEmail(req, email, resetToken);
 
         res.json({ message: 'Jelszó visszaállítási email elküldve.' });
     } catch (error) {
@@ -975,6 +994,46 @@ api.post('/reset-password', async (req, res) => {
         res.status(500).json({ message: "Szerverhiba" });
     }
 
+});
+
+// Email küldése regisztrált felhasználónak
+api.post('/send-email', isAuthenticated('user'), async (req, res) => {
+    const { email, subject, html } = req.body;
+
+    // Kötelező inputok ellenőrzése
+    if (!email || !subject || !html) {
+        return res.status(400).json({
+            error: 'Email, tárgy és HTML tartalom megadása kötelező.'
+        });
+    }
+
+    try {
+        // Ellenőrizzük, hogy létezik-e a felhasználó
+        const users = await query(
+            'SELECT user_id FROM User WHERE email = ?',
+            [email]
+        );
+
+        // Ha nem létezik → NEM áruljuk el
+        if (users.length === 0) {
+            return res.json({
+                message: 'Ha az email cím regisztrálva van, az üzenet elküldésre került.'
+            });
+        }
+
+        // Email küldése
+        await sendGenericEmail(email, subject, html);
+
+        res.json({
+            message: 'Ha az email cím regisztrálva van, az üzenet elküldésre került.'
+        });
+
+    } catch (err) {
+        console.error('Hiba az email küldése során:', err);
+        res.status(500).json({
+            error: 'Szerverhiba az email küldése közben.'
+        });
+    }
 });
 
 function isAuthenticated(requiredRole = null) {
