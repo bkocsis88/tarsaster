@@ -30,6 +30,7 @@ app.use(session({
     secret: 'valami_nagyon_titkos_szó', // environment variable-ben tárold élesben!
     resave: false,
     saveUninitialized: false,
+    rolling: true,
     cookie: {
         httpOnly: true,
         secure: false, // állítsd true-ra HTTPS esetén

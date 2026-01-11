@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             wishlistBtn.className = 'btn btn-danger';
         }
         if (game.is_owned) {
-            ownedBtn.className = 'btn btn-succes';
+            ownedBtn.className = 'btn btn-success';
         }
 
         //Kattintás események
@@ -115,6 +115,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function toggleWishlist(game) {
         const wishlistBtn = document.getElementById('wishlistBtn');
         wishlistBtn.disabled = true;
+        const ownedBtn = document.getElementById('ownedBtn');
 
         try {
             const method = game.is_in_wishlist ? 'DELETE' : 'POST';
@@ -137,6 +138,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 wishlistBtn.className = 'btn btn-outline-danger';
                 wishlistBtn.innerHTML = '<i class="bi bi-heart"></i> Szeretném';
             }
+            if (game.is_in_wishlist && game.is_owned){
+                game.is_owned = false;
+                const response = await fetch(`/api/owned/${gameId}`,{method: 'DELETE'});
+                ownedBtn.className = 'btn btn-outline-success';
+                ownedBtn.innerHTML = '<i class="bi bi-check-circle"></i> Megvan';
+            }
         }
         catch (error) {
             console.error('Wishlist hiba:', error);
@@ -150,6 +157,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function toggleOwned(game) {
         const ownedBtn = document.getElementById('ownedBtn');
         ownedBtn.disabled = true;
+        const wishlistBtn = document.getElementById('wishlistBtn');
 
         try {
             const method = game.is_owned ? 'DELETE' : 'POST';
@@ -171,6 +179,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             else {
                 ownedBtn.className = 'btn btn-outline-success';
                 ownedBtn.innerHTML = '<i class="bi bi-check-circle"></i> Megvan';
+            }
+            if (game.is_in_wishlist && game.is_owned){
+                game.is_in_wishlist = false;
+                const response = await fetch(`/api/wishlist/${gameId}`,{method: 'DELETE'});
+                wishlistBtn.className = 'btn btn-outline-danger';
+                wishlistBtn.innerHTML = '<i class="bi bi-heart"></i> Szeretném';
             }
         }
         catch (error) {
