@@ -3,13 +3,13 @@ openapi: 3.0.3
 info:
   title: BoardGame API
   version: 1.0.0
-  description: Session-based REST API (express-session, cookies)
+  description: Session-alapú REST API (express-session, sütik)
 
 servers:
   - url: http://localhost:3000/api
 
 # =====================
-# 🔐 AUTH
+# 🔐 HITELESÍTÉS
 # =====================
 components:
   securitySchemes:
@@ -53,21 +53,21 @@ components:
           enum: [admin, user]
 
 # =====================
-# 🔐 DEFAULT SECURITY
+# 🔐 ALAPÉRTELMEZETT BIZTONSÁG
 # =====================
 security:
   - cookieAuth: []
 
 # =====================
-# 🚏 PATHS
+# 🚏 VÉGPONTOK
 # =====================
 paths:
 
-  # -------- AUTH --------
+  # -------- HITELesítés --------
   /login:
     post:
       security: []
-      summary: Login
+      summary: Bejelentkezés
       requestBody:
         required: true
         content:
@@ -80,18 +80,18 @@ paths:
                 password: { type: string }
       responses:
         '200':
-          description: Logged in
+          description: Sikeres bejelentkezés
 
   /logout:
     post:
-      summary: Logout
+      summary: Kijelentkezés
       responses:
-        '200': { description: Logged out }
+        '200': { description: Sikeres kijelentkezés }
 
   /register:
     post:
       security: []
-      summary: Register
+      summary: Regisztráció
       requestBody:
         required: true
         content:
@@ -107,13 +107,13 @@ paths:
                 birthdate: { type: string, format: date }
                 location: { type: string }
       responses:
-        '201': { description: Registered }
+        '201': { description: Sikeres regisztráció }
 
-  # -------- BOARDGAMES --------
+  # -------- TÁRSASJÁTÉKOK --------
   /boardgames:
     get:
       security: []
-      summary: List board games (filters supported)
+      summary: Társasjátékok listázása (szűréssel)
       parameters:
         - in: query
           name: category
@@ -141,7 +141,7 @@ paths:
           schema: { type: boolean }
       responses:
         '200':
-          description: Board games
+          description: Társasjátékok listája
           content:
             application/json:
               schema:
@@ -149,20 +149,20 @@ paths:
                 items: { $ref: '#/components/schemas/BoardGame' }
 
     post:
-      summary: Create board game
-      description: "**Requires admin**"
+      summary: Társasjáték létrehozása
+      description: "**Admin jogosultság szükséges**"
       requestBody:
         required: true
         content:
           application/json:
             schema: { $ref: '#/components/schemas/BoardGame' }
       responses:
-        '201': { description: Created }
+        '201': { description: Sikeresen létrehozva }
 
   /boardgames/{id}:
     get:
       security: []
-      summary: Get board game
+      summary: Társasjáték lekérdezése
       parameters:
         - in: path
           name: id
@@ -175,22 +175,22 @@ paths:
               schema: { $ref: '#/components/schemas/BoardGame' }
 
     patch:
-      summary: Update board game
-      description: "**Requires admin**"
+      summary: Társasjáték módosítása
+      description: "**Admin jogosultság szükséges**"
       responses:
-        '200': { description: Updated }
+        '200': { description: Sikeresen frissítve }
 
     delete:
-      summary: Delete board game
-      description: "**Requires admin**"
+      summary: Társasjáték törlése
+      description: "**Admin jogosultság szükséges**"
       responses:
-        '200': { description: Deleted }
+        '200': { description: Sikeresen törölve }
 
-  # -------- IMAGES --------
+  # -------- KÉPEK --------
   /boardgames/{id}/images:
     post:
-      summary: Upload images
-      description: "**Requires admin**"
+      summary: Képek feltöltése
+      description: "**Admin jogosultság szükséges**"
       requestBody:
         required: true
         content:
@@ -204,107 +204,107 @@ paths:
                     type: string
                     format: binary
       responses:
-        '201': { description: Uploaded }
+        '201': { description: Képek feltöltve }
 
     get:
       security: []
-      summary: List images
+      summary: Képek listázása
       responses:
-        '200': { description: Image metadata }
+        '200': { description: Képek metaadatai }
 
   /boardgames/{boardgameId}/images/{imageId}:
     get:
       security: []
-      summary: Get image binary
+      summary: Kép letöltése
       responses:
         '200':
-          description: Image binary
+          description: Kép bináris tartalma
 
     delete:
-      summary: Delete image
-      description: "**Requires admin**"
+      summary: Kép törlése
+      description: "**Admin jogosultság szükséges**"
       responses:
-        '200': { description: Deleted }
+        '200': { description: Sikeresen törölve }
 
-  # -------- CATEGORIES --------
+  # -------- KATEGÓRIÁK --------
   /categories:
     get:
       security: []
-      summary: List categories
+      summary: Kategóriák listázása
       responses:
         '200':
-          description: Categories
+          description: Kategóriák
           content:
             application/json:
               schema:
                 type: array
                 items: { type: string }
 
-  # -------- WISHLIST --------
+  # -------- KÍVÁNSÁGLISTA --------
   /wishlist/{boardgameId}:
     post:
-      summary: Add to wishlist
-      description: "**Requires user**"
+      summary: Hozzáadás a kívánságlistához
+      description: "**Felhasználói jogosultság szükséges**"
       responses:
-        '201': { description: Added }
+        '201': { description: Hozzáadva }
 
     delete:
-      summary: Remove from wishlist
-      description: "**Requires user**"
+      summary: Eltávolítás a kívánságlistáról
+      description: "**Felhasználói jogosultság szükséges**"
       responses:
-        '200': { description: Removed }
+        '200': { description: Eltávolítva }
 
-  # -------- OWNED --------
+  # -------- TULAJDONOLT JÁTÉKOK --------
   /owned/{boardgameId}:
     post:
-      summary: Add owned game
-      description: "**Requires user**"
+      summary: Társasjáték hozzáadása a tulajdonoltakhoz
+      description: "**Felhasználói jogosultság szükséges**"
       responses:
-        '201': { description: Added }
+        '201': { description: Hozzáadva }
 
     delete:
-      summary: Remove owned game
-      description: "**Requires user**"
+      summary: Társasjáték eltávolítása a tulajdonoltak közül
+      description: "**Felhasználói jogosultság szükséges**"
       responses:
-        '200': { description: Removed }
+        '200': { description: Eltávolítva }
 
-  # -------- USERS --------
+  # -------- FELHASZNÁLÓK --------
   /users:
     get:
-      summary: List users
-      description: "**Requires admin**"
+      summary: Felhasználók listázása
+      description: "**Admin jogosultság szükséges**"
       responses:
-        '200': { description: Users }
+        '200': { description: Felhasználók }
 
     post:
-      summary: Create user
-      description: "**Requires admin**"
+      summary: Felhasználó létrehozása
+      description: "**Admin jogosultság szükséges**"
       responses:
-        '201': { description: Created }
+        '201': { description: Sikeresen létrehozva }
 
   /users/{id}:
     get:
-      summary: Get user
-      description: "**User: self | Admin: any**"
+      summary: Felhasználó adatainak lekérdezése
+      description: "**Felhasználó: saját | Admin: bármely**"
       responses:
-        '200': { description: User }
+        '200': { description: Felhasználó adatai }
 
     patch:
-      summary: Update user
-      description: "**User: self | Admin: any**"
+      summary: Felhasználó módosítása
+      description: "**Felhasználó: saját | Admin: bármely**"
       responses:
-        '200': { description: Updated }
+        '200': { description: Sikeresen frissítve }
 
     delete:
-      summary: Delete user
-      description: "**Requires admin (not self)**"
+      summary: Felhasználó törlése
+      description: "**Admin jogosultság szükséges (nem saját fiók)**"
       responses:
-        '200': { description: Deleted }
+        '200': { description: Sikeresen törölve }
 
   /users/{id}/role:
     patch:
-      summary: Change role
-      description: "**Requires admin (not self)**"
+      summary: Felhasználói szerepkör módosítása
+      description: "**Admin jogosultság szükséges (nem saját fiók)**"
       requestBody:
         required: true
         content:
@@ -317,36 +317,96 @@ paths:
                   type: string
                   enum: [admin, user]
       responses:
-        '200': { description: Role changed }
+        '200': { description: Szerepkör módosítva }
 
   /users/change-password:
     post:
-      summary: Change password
-      description: "**Requires login**"
+      summary: Jelszó módosítása
+      description: "**Bejelentkezés szükséges**"
       responses:
-        '200': { description: Changed }
+        '200': { description: Jelszó megváltoztatva }
 
   /profile:
     get:
-      summary: Get own profile
-      description: "**Requires user**"
+      summary: Saját profil lekérdezése
+      description: "**Felhasználói jogosultság szükséges**"
       responses:
         '200':
           content:
             application/json:
               schema: { $ref: '#/components/schemas/User' }
 
-  # -------- PASSWORD RESET --------
+  # -------- JELSZÓ VISSZAÁLLÍTÁS --------
   /forgot-password:
     post:
       security: []
-      summary: Request password reset
+      summary: Jelszó-visszaállítás kérése
       responses:
-        '200': { description: Email sent }
+        '200': { description: Email elküldve }
 
   /reset-password:
     post:
       security: []
-      summary: Reset password
+      summary: Jelszó visszaállítása
       responses:
-        '200': { description: Password reset }
+        '200': { description: Jelszó visszaállítva }
+
+  # -------- EMAIL --------
+  /send-email:
+    post:
+      summary: Email küldése regisztrált felhasználónak
+      description: >
+        Email küldése **csak akkor történik meg, ha az email cím regisztrált felhasználóhoz tartozik**.
+        A válasz szándékosan általános, a felhasználók létezésének elrejtése érdekében.
+        **Bejelentkezett felhasználó szükséges**.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, subject, html]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                subject:
+                  type: string
+                  example: Üdvözlünk a BoardGame alkalmazásban
+                html:
+                  type: string
+                  example: "<h1>Szia!</h1><p>Ez egy teszt email.</p>"
+      responses:
+        '200':
+          description: Email elküldve (vagy csendben figyelmen kívül hagyva, ha nincs regisztrálva)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ha az email cím regisztrálva van, az üzenet elküldésre került.
+        '400':
+          description: Hiányzó kötelező mezők
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Email, tárgy és HTML tartalom megadása kötelező.
+        '401':
+          description: Nincs bejelentkezve
+        '500':
+          description: Szerverhiba email küldése közben
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Szerverhiba az email küldése közben.
