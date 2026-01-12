@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function(){
             const queryParams = new URLSearchParams();
             if (filters.name) queryParams.append('search', filters.name);
             if (filters.category) queryParams.append('category', filters.category);
-            if (filters.player_count) queryParams.append('maxPlayers', filters.player_count);
+            if (filters.player_count) queryParams.append('minPlayers', filters.player_count);
             if (filters.player_age) queryParams.append('ageLimit', filters.player_age);
             if (filters.wishlist !== undefined && filters.wishlist !== '') queryParams.append('isInWishlist', filters.wishlist);
             if (filters.owned !== undefined && filters.owned !== '') queryParams.append('isOwned', filters.owned);
