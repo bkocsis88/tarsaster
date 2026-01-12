@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
             formData.append('image', fileInput.files[0]);
 
             // Backend AI endpoint hívás
-            const response = await fetch('/ai/search', {
+            const response = await fetch('/ai/gamesearch', {
                 method: 'POST',
                 body: formData
             });

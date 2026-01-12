@@ -502,15 +502,23 @@ document.addEventListener('DOMContentLoaded', function(){
                 message += 'Jelenleg nincsenek játékok a kívánságlistámban.';
             }
 
-            // mailto: link összeállítása és megnyitása
-            const mailtoLink = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
-            window.location.href = mailtoLink;
+            // Email küldése API-n kersztül
+            const emailResponse = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    email: email,
+                    subject: subject || 'Kívánságlistám a TársasApp-on',
+                    html: message
+                })
+            });
 
             // Modal bezárása
             bootstrap.Modal.getInstance(document.getElementById('shareWishlistModal')).hide();
+            await modalAlert('E-mail sikeresen elküldve!');
         } catch (error) {
-            console.error('Email küldési hiba:', error);
-            await modalAlert( error.message || 'Hiba történt az email előkészítésekor');
+            console.error('E-mail küldési hiba:', error);
+            await modalAlert( error.message || 'Hiba történt az e-mail előkészítésekor');
         }
     });
 
