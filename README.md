@@ -4,17 +4,17 @@
 
 Ez a dokumentum a társasjáték kategorizáló és megosztó webalkalmazás részletes specifikációját tartalmazza. A rendszer célja, hogy lehetővé tegye a felhasználók számára társasjátékok strukturált gyűjtését, rendszerezését és megosztását másokkal, valamint hogy egy közösségi élményt biztosítson a játékrajongók számára.
 
-Az alkalmazás modern technológiákat ötvöz, beleértve egy reszponzív Bootstrap alapú frontend felületet, PHP nyelven készült backend modult, valamint MariaDB adatbázist. Az alkalmazás egyik legkülönlegesebb funkciója a mobil eszközökön elérhető mesterséges intelligencián alapuló társasjáték-felismerés.
+Az alkalmazás modern technológiákat ötvöz, beleértve egy reszponzív Bootstrap alapú frontend felületet, Node.JS-ben készült backend modult, valamint MariaDB adatbázist. Az alkalmazás egyik legkülönlegesebb funkciója a mobil eszközökön elérhető mesterséges intelligencián alapuló társasjáték-felismerés.
 
 ---
 
 ## 2. Architektúra és technológiai háttér
 
 - **Frontend**: HTML, CSS, JavaScript – Bootstrap frameworkre építve, reszponzív megjelenéssel.
-- **Backend**: Node.JS / EJS alapú REST-szerű szerveroldali logika.
+- **Backend**: Node.JS / EJS alapú REST szerveroldali logika.
 - **Adatbázis**: MariaDB – relációs adatmodell, optimalizálva társasjátékok és felhasználók közötti kapcsolatok tárolására.
 - **AI modul**: Kép alapján történő adatkinyerés mobilon, AI-alapú képfeldolgozással.
-- **Mobil támogatás**: Az alkalmazás reszponzív, később mobilalkalmazásként (PWA vagy natív wrapper) is kiadásra kerül.
+- **Mobil támogatás**: Az alkalmazás reszponzív, PWA webalkalmazás is lefejlesztésre került.
 
 ---
 
@@ -24,16 +24,15 @@ Az alkalmazás két fő felhasználói szerepkört támogat:
 
 ### Egyszerű felhasználó
 - Teljes hozzáférés a társasjáték adatbázishoz.
-- „Meg van” jelölés használata.
+- „Megvan” jelölés használata.
 - Kívánságlista létrehozása, szerkesztése, megosztása.
-- Más felhasználók barátként való jelölése.
-- Saját profil adatainak szerkesztése, jelszócsere.
+- Saját profil adatainak szerkesztése, jelszómódosítás.
 
 ### Adminisztrátor
-- Új regisztrációk jóváhagyása.
 - Új társasjáték felvitele az adatbázisba.
 - Társasjáték adatlapok szerkesztése, törlése.
 - Admin jogosultságok kiosztása más felhasználók számára.
+- Új felhasználók regisztrálása.
 
 > Fontos: adminisztrátori jogosultság csak admin által adható.
 
@@ -42,27 +41,24 @@ Az alkalmazás két fő felhasználói szerepkört támogat:
 ## 4. Regisztrációs és hitelesítési folyamat
 
 - Publikus regisztráció lehetséges minden látogató számára.
-- A regisztrált fiókot az adminnak kell jóváhagynia a használatba vétel előtt.
-- Bejelentkezés után a felhasználó minden nem-admin funkciót elér.
+- Bejelentkezés után a felhasználó minden user funkciót elér.
 
 ---
 
 ## 5. Társasjáték entitás – adattartalom
 
-A társasjátékok strukturált formában kerülnek tárolásra, a következő leggyakoribb nemzetközi mezőstruktúrát alkalmazva:
+A társasjátékok strukturált formában kerülnek tárolásra, a következő mezőstruktúrát alkalmazva:
 
 - **Név**
-- **Kategória** (pl. kártyajáték, stratégiai, kooperatív stb.)
+- **Kategória** (pl. gyerek, stratégiai, kooperatív stb.)
 - **Ajánlott korosztály** (pl. 6+, 10+)
-- **Játékosok száma** (minimum–maximum)
+- **Játékosok száma** (maximum)
 - **Átlagos játékidő** (percben)
 - **Kiadó neve**
-- **Megjelenés éve**
 - **Leírás**
 - **YouTube hivatkozás** (játékmenet vagy ismertető videó)
 - **Borítókép**
-- **Nyelv**
-- **Felhasználói értékelés** (1–5 csillagos átlag)
+- **Címkézés**
 
 ---
 
@@ -74,8 +70,9 @@ Az alkalmazás hatékony keresési lehetőségeket kínál:
 - **Kategóriaszűrők**:
   - Játék típusa
   - Korosztály
-  - Játékidő
   - Játékosok száma
+  - Sajátlista
+  - Kívánságlista
 
 A kereső működik mind asztali, mind mobil eszközökön.
 
@@ -86,86 +83,87 @@ A kereső működik mind asztali, mind mobil eszközökön.
 Bejelentkezett felhasználók az alábbi lehetőségeket vehetik igénybe:
 
 ### Társasjátékhoz kapcsolódó funkciók
-- **„Meg van”**: megjelölés, hogy a felhasználónak megvan a játék.
+- **„Megvan”**: megjelölés, hogy a felhasználónak tulajdonában van a játék.
 - **Kívánságlista**:
   - Hozzáadás és eltávolítás
-  - Lista elküldése emailben (pl. ajándékötletként)
-  - Lista megosztása más regisztrált felhasználóval (pl. barát)
+  - Lista megtekintése
+  - Lista megosztása e-mailben más regisztrált felhasználóval (pl. barát)
 
-### Közösségi funkciók
+### Közösségi funkciók (tervezett jövőbeni fejlesztés)
 - **Barát jelölés**: bármely felhasználót lehet jelölni barátnak.
 - **Barátság visszaigazolása**: csak kölcsönös elfogadás után lesz aktív.
 - **Barátlista** megtekintése, szerkesztése.
 
 ### Profilkezelés
-- Név, email, jelszó módosítása.
-- Kívánságlisták és barátlista áttekintése.
+- Név, születési idő, lakhely módosítása.
+- Jelszómódosítás.
+
 
 ---
 
 ## 8. Adminisztrációs felület
 
-Admin felhasználók számára külön menüpontok érhetők el:
+Admin felhasználók számára külön menüpontok érhetőek el:
 
-- **Regisztrációk jóváhagyása**
 - **Társasjátékok kezelése**:
-  - Új játék felvitele
-  - Meglévő játék szerkesztése
-  - Játék törlése
+  - Új játék rögzítése.
+  - Meglévő játék adatainak szerkesztése.
+  - Játék törlése.
 - **Felhasználói jogosultságok kezelése**:
-  - Admin jog kiosztása
+  - Jogosultságkezelés.
+  - Új felhasználó rögzítése.
 
 ---
 
-## 9. AI-alapú társasjáték-felvitel
+## 9. AI-alapú társasjáték-felvitel és társasjáték keresés
 
 Ez a funkció a rendszer „high-tech” kiemelt eleme, amely a marketing kommunikáció fő eleme is lesz.
 
-### Működés
-- Felhasználó aktiválja a kamera funkciót.
+### Működés rögzítés esetén
+- Felhasználó (admin) aktiválja a kamera funkciót.
 - A játék dobozáról készített képet az AI feldolgozza.
 - A rendszer automatikusan kitölti az alábbi mezőket:
   - Név
-  - Kategória
   - Játékosok száma
   - Játékidő
   - Korosztály
-  - Borítókép
-  - YouTube hivatkozás (ha beazonosítható)
+  - Játék leírása
+  - Kiadó
   
-Cél, hogy a társasjáték-felvitel gyors és felhasználóbarát legyen, különösen gyűjtők számára.
+### Működés keresés esetén
+- Felhasználó aktiválja a kamera funkciót.
+- A játék dobozáról készített képet az AI feldolgozza.
+- A rendszer automatikusan azonosítja a játékot:
+  - Feltünteti a társasjáték nevét.
+  - Amennyiben az adatbázisban szerepel a játék, a játék megjelenik a felhasználó számára.
+
+Cél, hogy a társasjáték-felvitel gyors és felhasználóbarát legyen.
 
 ---
 
 ## 10. Főbb képernyők
 
 ### Főoldal
-- Kiemelt játékok listája
-- Keresőmező
+- Főmenü
+- Alkalmazás ismertető
 - Regisztrációs és bejelentkezési lehetőség
 
 ### Társasjáték lista
-- Játékok lapozható listája
+- Játékok listája (alap adatok feltüntetve)
 - Szűrési és keresési lehetőségek
+- Jelölési lehetőség
 
 ### Társasjáték adatlap
 - Részletes információk
-- „Meg van” jelölő
+- „Megvan” jelölő
 - Kívánságlistára helyezés
 - Beágyazott YouTube videó
-
-### Kívánságlista oldal
-- Játékok listája
-- Email küldési opció
-- Lista megosztása barátokkal
 
 ### Profil oldal
 - Adatok módosítása
 - Jelszóváltás
-- Barátlista megtekintése és kezelése
 
 ### Admin felület
-- Jóváhagyásra váró regisztrációk
 - Társasjáték adatlapok kezelése
 - Jogosultságkezelés
 
@@ -173,10 +171,10 @@ Cél, hogy a társasjáték-felvitel gyors és felhasználóbarát legyen, kül�
 
 ## 11. Biztonság és adatvédelem
 
-- HTTPS-alapú titkosított kommunikáció.
+- HTTPS-alapú titkosított kommunikáció (éles környezetben).
 - Jelszavak biztonságos titkosítása.
 - Jogosultság-alapú hozzáférés-ellenőrzés minden funkcióhoz.
-- Személyes adatok kizárólag az adatvédelmi szabályok szerint használhatók.
+- Személyes adatok kizárólag az adatvédelmi szabályok szerint használhatóak.
 
 ---
 
@@ -184,6 +182,8 @@ Cél, hogy a társasjáték-felvitel gyors és felhasználóbarát legyen, kül�
 
 A rendszer fejlesztése során a következő bővítési irányok tervezhetők:
 
+- **Barát jelölés és visszaigazolás** a közösség építéshez.
+- **Barátok listája**, a felhasználó számára megjelenítve.
 - **Felhasználói értékelések és kommentek** a játékokhoz.
 - **Játékajánló rendszer** az AI által, a felhasználó gyűjteménye vagy barátai alapján.
 - **Társasjáték események**, találkozók, versenyek szervezése.
@@ -191,9 +191,9 @@ A rendszer fejlesztése során a következő bővítési irányok tervezhetők:
 - **Gamifikációs elemek**: kitüntetések, gyűjtői jelvények, szintek.
 - **API integráció** más társasjáték adatbázisokkal (pl. BoardGameGeek).
 - **Többnyelvű felület** nemzetközi piacra lépéshez.
-- **Offline mód** mobilon: böngészés és kívánságlista elérés internet nélkül.
+
 
 ---
 
-*Verzió: 1.1 – 2025.06.16*
+*Verzió: 1.1 – 2026.01.11*
 

@@ -1,0 +1,412 @@
+openapi: 3.0.3
+
+info:
+  title: BoardGame API
+  version: 1.0.0
+  description: Session-alapú REST API (express-session, sütik)
+
+servers:
+  - url: http://localhost:3000/api
+
+# =====================
+# 🔐 HITELESÍTÉS
+# =====================
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: connect.sid
+
+  schemas:
+
+    BoardGame:
+      type: object
+      properties:
+        boardgame_id: { type: integer }
+        name: { type: string }
+        age_limit: { type: integer }
+        player_count: { type: integer }
+        category: { type: string }
+        playing_time_in_minutes: { type: integer }
+        publisher: { type: string, nullable: true }
+        video_url: { type: string, nullable: true }
+        tags: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        is_in_wishlist: { type: boolean }
+        is_owned: { type: boolean }
+
+    User:
+      type: object
+      properties:
+        user_id: { type: integer }
+        username: { type: string }
+        full_name: { type: string }
+        email: { type: string }
+        location: { type: string, nullable: true }
+        birthdate:
+          type: string
+          format: date
+          nullable: true
+        role:
+          type: string
+          enum: [admin, user]
+
+# =====================
+# 🔐 ALAPÉRTELMEZETT BIZTONSÁG
+# =====================
+security:
+  - cookieAuth: []
+
+# =====================
+# 🚏 VÉGPONTOK
+# =====================
+paths:
+
+  # -------- HITELesítés --------
+  /login:
+    post:
+      security: []
+      summary: Bejelentkezés
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200':
+          description: Sikeres bejelentkezés
+
+  /logout:
+    post:
+      summary: Kijelentkezés
+      responses:
+        '200': { description: Sikeres kijelentkezés }
+
+  /register:
+    post:
+      security: []
+      summary: Regisztráció
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, full_name, password]
+              properties:
+                username: { type: string }
+                email: { type: string }
+                full_name: { type: string }
+                password: { type: string }
+                birthdate: { type: string, format: date }
+                location: { type: string }
+      responses:
+        '201': { description: Sikeres regisztráció }
+
+  # -------- TÁRSASJÁTÉKOK --------
+  /boardgames:
+    get:
+      security: []
+      summary: Társasjátékok listázása (szűréssel)
+      parameters:
+        - in: query
+          name: category
+          schema: { type: string }
+        - in: query
+          name: search
+          schema: { type: string }
+        - in: query
+          name: minPlayers
+          schema: { type: integer }
+        - in: query
+          name: maxPlayers
+          schema: { type: integer }
+        - in: query
+          name: ageLimit
+          schema: { type: integer }
+        - in: query
+          name: description
+          schema: { type: string }
+        - in: query
+          name: isInWishlist
+          schema: { type: boolean }
+        - in: query
+          name: isOwned
+          schema: { type: boolean }
+      responses:
+        '200':
+          description: Társasjátékok listája
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/BoardGame' }
+
+    post:
+      summary: Társasjáték létrehozása
+      description: "**Admin jogosultság szükséges**"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BoardGame' }
+      responses:
+        '201': { description: Sikeresen létrehozva }
+
+  /boardgames/{id}:
+    get:
+      security: []
+      summary: Társasjáték lekérdezése
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BoardGame' }
+
+    patch:
+      summary: Társasjáték módosítása
+      description: "**Admin jogosultság szükséges**"
+      responses:
+        '200': { description: Sikeresen frissítve }
+
+    delete:
+      summary: Társasjáték törlése
+      description: "**Admin jogosultság szükséges**"
+      responses:
+        '200': { description: Sikeresen törölve }
+
+  # -------- KÉPEK --------
+  /boardgames/{id}/images:
+    post:
+      summary: Képek feltöltése
+      description: "**Admin jogosultság szükséges**"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+      responses:
+        '201': { description: Képek feltöltve }
+
+    get:
+      security: []
+      summary: Képek listázása
+      responses:
+        '200': { description: Képek metaadatai }
+
+  /boardgames/{boardgameId}/images/{imageId}:
+    get:
+      security: []
+      summary: Kép letöltése
+      responses:
+        '200':
+          description: Kép bináris tartalma
+
+    delete:
+      summary: Kép törlése
+      description: "**Admin jogosultság szükséges**"
+      responses:
+        '200': { description: Sikeresen törölve }
+
+  # -------- KATEGÓRIÁK --------
+  /categories:
+    get:
+      security: []
+      summary: Kategóriák listázása
+      responses:
+        '200':
+          description: Kategóriák
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { type: string }
+
+  # -------- KÍVÁNSÁGLISTA --------
+  /wishlist/{boardgameId}:
+    post:
+      summary: Hozzáadás a kívánságlistához
+      description: "**Felhasználói jogosultság szükséges**"
+      responses:
+        '201': { description: Hozzáadva }
+
+    delete:
+      summary: Eltávolítás a kívánságlistáról
+      description: "**Felhasználói jogosultság szükséges**"
+      responses:
+        '200': { description: Eltávolítva }
+
+  # -------- TULAJDONOLT JÁTÉKOK --------
+  /owned/{boardgameId}:
+    post:
+      summary: Társasjáték hozzáadása a tulajdonoltakhoz
+      description: "**Felhasználói jogosultság szükséges**"
+      responses:
+        '201': { description: Hozzáadva }
+
+    delete:
+      summary: Társasjáték eltávolítása a tulajdonoltak közül
+      description: "**Felhasználói jogosultság szükséges**"
+      responses:
+        '200': { description: Eltávolítva }
+
+  # -------- FELHASZNÁLÓK --------
+  /users:
+    get:
+      summary: Felhasználók listázása
+      description: "**Admin jogosultság szükséges**"
+      responses:
+        '200': { description: Felhasználók }
+
+    post:
+      summary: Felhasználó létrehozása
+      description: "**Admin jogosultság szükséges**"
+      responses:
+        '201': { description: Sikeresen létrehozva }
+
+  /users/{id}:
+    get:
+      summary: Felhasználó adatainak lekérdezése
+      description: "**Felhasználó: saját | Admin: bármely**"
+      responses:
+        '200': { description: Felhasználó adatai }
+
+    patch:
+      summary: Felhasználó módosítása
+      description: "**Felhasználó: saját | Admin: bármely**"
+      responses:
+        '200': { description: Sikeresen frissítve }
+
+    delete:
+      summary: Felhasználó törlése
+      description: "**Admin jogosultság szükséges (nem saját fiók)**"
+      responses:
+        '200': { description: Sikeresen törölve }
+
+  /users/{id}/role:
+    patch:
+      summary: Felhasználói szerepkör módosítása
+      description: "**Admin jogosultság szükséges (nem saját fiók)**"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [admin, user]
+      responses:
+        '200': { description: Szerepkör módosítva }
+
+  /users/change-password:
+    post:
+      summary: Jelszó módosítása
+      description: "**Bejelentkezés szükséges**"
+      responses:
+        '200': { description: Jelszó megváltoztatva }
+
+  /profile:
+    get:
+      summary: Saját profil lekérdezése
+      description: "**Felhasználói jogosultság szükséges**"
+      responses:
+        '200':
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+
+  # -------- JELSZÓ VISSZAÁLLÍTÁS --------
+  /forgot-password:
+    post:
+      security: []
+      summary: Jelszó-visszaállítás kérése
+      responses:
+        '200': { description: Email elküldve }
+
+  /reset-password:
+    post:
+      security: []
+      summary: Jelszó visszaállítása
+      responses:
+        '200': { description: Jelszó visszaállítva }
+
+  # -------- EMAIL --------
+  /send-email:
+    post:
+      summary: Email küldése regisztrált felhasználónak
+      description: >
+        Email küldése **csak akkor történik meg, ha az email cím regisztrált felhasználóhoz tartozik**.
+        A válasz szándékosan általános, a felhasználók létezésének elrejtése érdekében.
+        **Bejelentkezett felhasználó szükséges**.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, subject, html]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: user@example.com
+                subject:
+                  type: string
+                  example: Üdvözlünk a BoardGame alkalmazásban
+                html:
+                  type: string
+                  example: "<h1>Szia!</h1><p>Ez egy teszt email.</p>"
+      responses:
+        '200':
+          description: Email elküldve (vagy csendben figyelmen kívül hagyva, ha nincs regisztrálva)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Ha az email cím regisztrálva van, az üzenet elküldésre került.
+        '400':
+          description: Hiányzó kötelező mezők
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Email, tárgy és HTML tartalom megadása kötelező.
+        '401':
+          description: Nincs bejelentkezve
+        '500':
+          description: Szerverhiba email küldése közben
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Szerverhiba az email küldése közben.

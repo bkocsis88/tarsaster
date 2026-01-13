@@ -1,4 +1,6 @@
-// Database: board_game
+// =======================
+// Tables
+// =======================
 
 Table BoardGame {
   boardgame_id INT [pk, increment]
@@ -6,16 +8,19 @@ Table BoardGame {
   age_limit INT [not null]
   player_count INT [not null]
   category VARCHAR(250) [not null]
-  playing_time TEXT [not null]
+  playing_time_in_minutes INT [not null]
   publisher VARCHAR(250)
   video_url VARCHAR(250)
   tags TEXT
+  description TEXT
 }
 
 Table BoardGameImage {
   image_id INT [pk, increment]
   boardgame_id INT [not null]
-  data TEXT [not null]
+  data MEDIUMBLOB [not null]
+  file_name VARCHAR(255) [not null]
+  mime_type VARCHAR(255) [not null]
 }
 
 Table User {
@@ -56,10 +61,43 @@ Table GroupMember {
   group_id INT [not null]
 }
 
+Table UserRole {
+  user_id INT [pk]
+  role_name RoleName [not null]
+}
+
+Table PasswordResetToken {
+  id INT [pk, increment]
+  token VARCHAR(64) [not null, unique]
+  user_id INT [not null]
+  expiration_at DATETIME [not null]
+  used BOOLEAN [not null, default: false]
+}
+
+// =======================
+// Enums
+// =======================
+
+Enum RoleName {
+  admin
+  user
+}
+
+// =======================
+// Relationships
+// =======================
+
 Ref: BoardGameImage.boardgame_id > BoardGame.boardgame_id
+
 Ref: UserBoardGame.user_id > User.user_id
 Ref: UserBoardGame.boardgame_id > BoardGame.boardgame_id
+
 Ref: Wishlist.user_id > User.user_id
 Ref: Wishlist.boardgame_id > BoardGame.boardgame_id
+
 Ref: GroupMember.user_id > User.user_id
 Ref: GroupMember.group_id > UserGroup.group_id
+
+Ref: UserRole.user_id > User.user_id
+
+Ref: PasswordResetToken.user_id > User.user_id

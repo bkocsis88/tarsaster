@@ -1,2 +1,136 @@
-<h1>Társasjátékok</h1>
-<p>Itt lesz a társasjáték kereső</p>
+<section class="container py-5">
+  <h1 class="mb-4">Társasjáték kereső</h1>
+
+  <p>
+    Fedezd fel a következő kedvencedet pillanatok alatt!  
+    Használd a Társasjáték keresőt és szűrj kategória vagy akár a játékosok száma szerint.
+  </p>
+
+  <p>
+    Találj rá a tökéletes társasjátékodra!  
+    Kezdj el böngészni velünk!
+  </p>
+
+  <!--Szűrők létrehozása-->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">Szűrés</h5>
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label for="filterName" class="form-label">Játék neve</label>
+          <input type="text" class="form-control" id="filterName" placeholder="Keresés név szerint...">
+        </div>
+        <div class="col-md-3">
+          <label for="filterCategory" class="form-label">Kategória</label>
+          <select class="form-select" id="filterCategory">
+            <option value="">Összes kategória</option>
+            <option value="stratégiai">Stratégiai</option>
+            <option value="logikai">Logikai</option>
+            <option value="kooperativ">Kooperatív</option>
+            <option value="szabadulo">Szabadulós</option>
+            <option value="tortenetvezerelt">Történetvezérelt</option>
+            <option value="gyerek">Gyerek</option>
+            <option value="party">Party</option>
+            <option value="felnott">18+</option>
+          </select>
+        </div>
+        <div class="col-md-3">
+          <label for="filterPlayerCount" class="form-label">Játékosok száma</label>
+          <input type="number" class="form-control" id="filterPlayerCount" placeholder="Pl: 4" min="1">
+        </div>
+        <div class="col-md-3">
+          <label for="filterAge" class="form-label">Korhatár</label>
+          <input type="number" class="form-control" id="filterAge" placeholder="Pl: 12" min="0">
+        </div>
+      </div>
+      <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <button class="btn btn-primary" id="applyFilters">Szűrés</button>
+          <button class="btn btn-secondary" id="clearFilters">Szűrők törlése</button>
+        </div>
+        <div class="d-flex gap-3 align-items-center">
+          <button class="btn btn-link p-0 filter-toggle d-flex align-items-center gap-2"
+              id="shareAllWishlistBtn"
+              title="Kívánságlista küldése email-ben">
+            <i class="bi bi-envelope"></i>
+            <span>Kívánságlista küldése</span>
+          </button>
+          <button class="btn btn-link p-0 filter-toggle d-flex align-items-center gap-2"
+              id="filterWishlistToggle"
+              data-filter="wishlist"
+              data-state="off"
+              title="Kívánságlistám szűrése">
+            <i class="bi bi-heart"></i>
+            <span>Kívánságlista</span>
+          </button>
+          <button class="btn btn-link p-0 filter-toggle d-flex align-items-center gap-2"
+              id="filterOwnedToggle"
+              data-filter="owned"
+              data-state="off"
+              title="Meglévő játékaim szűrése">
+            <i class="bi bi-check-circle"></i>
+            <span>Saját lista</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Betöltés animációja-->
+  <div id="loadingSpinner" class="text-center my-5" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Betöltés...</span>
+    </div>
+    <p class="mt-2">Társasjátékok betöltése</p>
+  </div>
+
+  <!--Hibaüzenet-->
+  <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+  
+  <!--Társasjáték csempék-->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4" id="boardgamesContainer">
+    <!--A játékok ide kerülnek dinamikusan-->
+  </div>
+
+  <!--Nincs találat üzenet-->
+  <div id="noResults" class="text-center my-5" style="display: none;">
+    <p class="text-muted">Nincs találat a megadott szűrőknek megfelelően.</p>
+  </div>
+</section>
+
+<!-- Modal az email küldéshez -->
+<div class="modal fade" id="shareWishlistModal" tabindex="-1" aria-labelledby="shareWishlistLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="shareWishlistLabel">Kívánságlista megosztása</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Bezárás"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="emailSubject" class="form-label">Tárgy</label>
+          <input type="text" class="form-control" id="emailSubject" value="Kívánságlista megosztása" readonly>
+        </div>
+        <div class="mb-3">
+          <label for="recipientEmail" class="form-label">E-mail cím</label>
+          <input type="email" class="form-control" id="recipientEmail" placeholder="valaki@example.com">
+        </div>
+        <div class="mb-3">
+          <label for="emailMessage" class="form-label">Üzenet</label>
+          <div class="border rounded p-3" style="background-color: #f8f9fa; max-height: 300px; overflow-y: auto;">
+            <p class="mb-3">Szia! <br/>Szeretném megosztani veled a kívánságlistámat:<br/><br/></p>
+            <div id="wishlistLinksContainer">
+              <p class="text-muted"><small>Betöltés...</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Bezárás</button>
+        <button type="button" class="btn btn-primary" id="sendEmailBtn">E-mail küldése</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/tarsasjatekok.js"></script>

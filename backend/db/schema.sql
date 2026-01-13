@@ -8,21 +8,21 @@ CREATE TABLE BoardGame (
     age_limit INT NOT NULL,
     player_count INT NOT NULL,
     category VARCHAR(250) NOT NULL,
-    playing_time TEXT NOT NULL,
+    playing_time_in_minutes INT NOT NULL,
     publisher VARCHAR(250),
     video_url VARCHAR(250),
-    tags TEXT
+    tags TEXT,
+    description TEXT
 );
-
 
 CREATE TABLE BoardGameImage (
     image_id INT AUTO_INCREMENT PRIMARY KEY,
     boardgame_id INT NOT NULL,
-    data TEXT NOT NULL,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
-        ON DELETE CASCADE
+    data MEDIUMBLOB NOT NULL,
+    file_name VARCHAR(255) NOT NULL, 
+    mime_type VARCHAR(255) NOt NULL,
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame (boardgame_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE User (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -34,28 +34,21 @@ CREATE TABLE User (
     location VARCHAR(255)
 );
 
-
 CREATE TABLE UserBoardGame (
     user_id INT NOT NULL,
     boardgame_id INT NOT NULL,
     PRIMARY KEY (user_id, boardgame_id),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
-        ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame (boardgame_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE Wishlist (
     user_id INT NOT NULL,
     boardgame_id INT NOT NULL,
     PRIMARY KEY (user_id, boardgame_id),
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (boardgame_id) REFERENCES BoardGame(boardgame_id)
-        ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (boardgame_id) REFERENCES BoardGame (boardgame_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE UserGroup (
     group_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -63,13 +56,28 @@ CREATE TABLE UserGroup (
     description TEXT NOT NULL
 );
 
-
 CREATE TABLE GroupMember (
     group_member_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
     group_id INT NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(user_id)
-        ON DELETE CASCADE,
-    FOREIGN KEY (group_id) REFERENCES UserGroup(group_id)
-        ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE,
+    FOREIGN KEY (group_id) REFERENCES UserGroup (group_id) ON DELETE CASCADE
+);
+
+CREATE TABLE UserRole (
+    user_id INT PRIMARY KEY,
+    role_name VARCHAR(255) NOT NULL,
+    CHECK (
+        role_name IN ('admin', 'user')
+    ),
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE PasswordResetToken (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    token VARCHAR(64) NOT NULL UNIQUE,
+    user_id INT NOT NULL,
+    expiration_at DATETIME NOT NULL,
+    used BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES User (user_id) ON DELETE CASCADE
 );

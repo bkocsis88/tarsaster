@@ -1,35 +1,27 @@
-//MariaDB-hez kapcsolat létesítéséhez szükséges modulok betöltése
-const express = require("express");
-const mariadb = require("mariadb");
-const router = express.Router();
+const mariadb = require('mariadb');
 
-//adatbázis kapcsolat létrehozás
 const pool = mariadb.createPool({
-  host: 'pma.tarsasapp.hu',
-  port: 3307,
-  user: 'dbuser',
-  password: 'bIwDEiL43kqb',
-  database: 'tarsasapp',
-  connectionLimit: 5
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT), // Port konfiguráció
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    connectionLimit: Number(process.env.DB_CONN_LIMIT),
+    dateStrings: true
 });
 
-// API végpont: GET /db/teszt - lekérdezés a teszt táblából, minden egyes lekérdezéshez kell egy végpont
-router.get("/teszt", async (req, res) => {
-  let conn;
-  try {
-    conn = await pool.getConnection();
-    const rows = await conn.query("SELECT * FROM teszt");
-    res.json(rows);
-  } catch (err) {
-    console.error("DB hiba:", err);
-    res.status(500).json({ error: "Adatbázis hiba" });
-  } finally {
-    if (conn) conn.release();
-  }
-});
+async function query(sql, params = []) {
+    let conn;
+    try {
+        conn = await pool.getConnection();
+        const rows = await conn.query(sql, params);
+        return rows;
+    } catch (err) {
+        console.error(err);
+        throw err;
+    } finally {
+        if (conn) conn.release();
+    }
+}
 
-//  rekord beszúrása, minden táblához külön
-
-
-module.exports = router;
-
+module.exports = { query };

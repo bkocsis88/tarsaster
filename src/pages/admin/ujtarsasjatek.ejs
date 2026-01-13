@@ -1,0 +1,83 @@
+<div class="container newgamebox">
+    <div class="d-flex justify-content-center">
+        <h1 class="mb-5">Új társasjáték</h1>
+    </div>
+    <div class="d-flex justify-content-center">
+        <p class="lead">Kérjük, add meg a társasjáték adatait.</p>
+    </div>
+    <form id="NewGameForm">
+        <div class="mb-3">
+            <label for="nameInput" class="form-label">Játék név</label>
+            <input type="text" class="form-control" id="nameInput" placeholder="Társasjáték neve. Pl: Catan">
+        </div>
+        <div class="mb-3">
+            <label for="descriptionInput" class="form-label">Játék leírás</label>
+            <textarea type="text" class="form-control" id="descriptionInput" placeholder="Társasjáték leírása. Pl: Egy izgalmas stratégiai játék..."></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="ageLimitInput" class="form-label">Korhatár</label>
+            <input type="number" class="form-control" id="ageLimitInput" placeholder="Korhatár. Pl: 12">
+        </div>
+        <div class="mb-3">
+            <label for="playerCountInput" class="form-label">Játékosok száma</label>
+            <input type="number" class="form-control" id="playerCountInput" placeholder="Játékosok száma. Pl: 4">
+        </div>
+        <div class="mb-3">
+            <label for="playingTimeInMinutesInput" class="form-label">Játékidő (perc)</label>
+            <input type="number" class="form-control" id="playingTimeInMinutesInput" placeholder="Játékidő. Pl: 30">
+        </div>
+        <div class="mb-3">
+            <label for="publisherInput" class="form-label">Kiadó</label>
+            <input type="text" class="form-control" id="publisherInput" placeholder="Kiadó neve. Pl: Kosmos">
+        </div>
+        <div class="mb-3">
+            <label for="videoInput" class="form-label">Játék videó</label>
+            <input type="text" class="form-control" id="videoInput" placeholder="Videó linkje. Pl: ">
+        </div>
+        <div class="mb-3">
+            <span class="form-label">Játék kép</span>
+            <div id="imagePreviews">
+                
+            </div>
+            <div class="alert alert-warning" role="alert">
+                A kép mérete maximum 10MB lehet!
+            </div>
+            <div class="mb-3 image-upload-box d-flex flex-column align-items-center">
+                <input type="file" class="form-control" id="imageInput" accept="image/*">
+                <button type="button" class="btn btn-secondary mt-2" id="btn_addImage">Kép hozzáadása</button>
+                <button type="button" class="btn btn-primary mt-2" id="btn_aiRecognition">AI felismerés</button>
+            </div>
+        </div>
+        <div class="alert alert-warning" role="alert">
+            Kérlek, jól olvasható képet tölts fel a társasjátékról!
+        </div>
+        
+        <div class="mb-3">
+            <label for="categoryInput" class="form-label">Kategória</label>
+            <select id="categoryInput" class="form-control">
+                <option value="">Válassz egy kategóriát!</option>
+                <option value="stratégiai">Stratégiai</option>
+                <option value="logikai">Logikai</option>
+                <option value="kooperativ">Kooperatív</option>
+                <option value="szabadulo">Szabadulós</option>
+                <option value="tortenetvezerelt">Történetvezérelt</option>
+                <option value="gyerek">Gyerek</option>
+                <option value="party">Party</option>
+                <option value="felnott">18+</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="tagsInput" class="form-label">Címkék</label>
+            <input type="text" class="form-control" id="tagsInput" placeholder="Címkék. Pl: retro, kártyajáték">
+        </div>
+        <div class="alert alert-warning" role="alert">
+            Kérlek, vesszővel elválasztva add meg a címkéket!
+        </div>
+        
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary m-2">Új játék</button>
+            <button type="button" class="btn btn-danger m-2" id="btn_cancel">Mégse</button>
+        </div>
+    </form>
+</div>
+<script src="/js/newboardgame.js"></script>
