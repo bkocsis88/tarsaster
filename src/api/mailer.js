@@ -2,10 +2,10 @@ const nodemailer = require('nodemailer');
 
 // Közös SMTP transporter
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: process.env.MAIL_SERVICE,
     auth: {
-        user: 'tarsaster2025@gmail.com',
-        pass: 'tdocmzmvflbshtop' // Gmail App Password
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASS // Gmail App Password
     }
 });
 

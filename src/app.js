@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 //elindít egy programot (express), ami egy adott porton kiszolgálja a weboldalt
 // express module
 const express = require("express");

@@ -1,11 +1,12 @@
 const mariadb = require('mariadb');
 
 const pool = mariadb.createPool({
-    host: 'localhost',
-    user: 'dbuser',
-    password: 'bIwDEiL43kqb',
-    database: 'board_game',
-    connectionLimit: 5,
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT), // Port konfiguráció
+    user: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
+    connectionLimit: Number(process.env.DB_CONN_LIMIT),
     dateStrings: true
 });
 
