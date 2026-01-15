@@ -5,6 +5,25 @@
 </div>
 
 <script>
+    //ellenőrzi, hogy a felhasználó be van e lépve, ha nem, akkor visszairányít a főoldalra
+    async function goHomeIfNotLoggedIn() {
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                
+                location.href="/";
+                
+            } 
+        } catch (error) {
+        }
+    }
+    goHomeIfNotLoggedIn();
     document.getElementById('btn_gotomain').addEventListener('click', async function (e) {
         window.location.href = '/';
     });

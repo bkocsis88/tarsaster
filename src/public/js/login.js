@@ -1,3 +1,21 @@
+//ellenőrzi, hogy be van e jelentkezve a felhasználó
+async function goHomeIfLoggedIn() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            location.href="/";
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfLoggedIn();
 document.getElementById('loginForm').addEventListener('submit', async function (e) {
     //hozzá kell adni egy esemény figyelőt és az async functiont, ami lehetővé teszi, hogy egyszerre több művelet fusson a böngészőben
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését

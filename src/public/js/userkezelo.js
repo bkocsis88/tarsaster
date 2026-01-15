@@ -1,3 +1,24 @@
+//ellenőrzi, hogy admin-e a felhasználó, ha nem, akkor visszairányít a főoldalra
+async function goHomeIfNotadmin() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if(data.role!="admin"){
+                location.href="/";
+            }
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfNotadmin();
+
 document.addEventListener('DOMContentLoaded', async function (e) {
     //SELECT user_id, username, full_name, email, location, birthdate FROM User
     const response = await fetch('/api/users',{
