@@ -42,6 +42,15 @@ async function loadSettlements() {
 //Települések betöltése az oldal betöltésekor
 loadSettlements();
 
+const datePicker = document.getElementById('birthdateInput');
+  
+  // Lekérjük a mai dátumot ISO formátumban (YYYY-MM-DDTHH:mm:ss.sssZ)
+  // Majd levágjuk róla csak a dátum részt (az első 10 karaktert)
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Beállítjuk a max attribútumot
+  datePicker.setAttribute('max', today);
+
 document.getElementById('RegistrationForm').addEventListener('submit', async function (e) {
     //hozzá kell adni egy esemény figyelőt és az async functiont, ami lehetővé teszi, hogy egyszerre több művelet fusson a böngészőben
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését

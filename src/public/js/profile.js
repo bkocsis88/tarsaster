@@ -47,6 +47,15 @@ document.addEventListener('DOMContentLoaded', async function (e) {
     }
 });
 
+const datePicker = document.getElementById('birthdateInput');
+  
+  // Lekérjük a mai dátumot ISO formátumban (YYYY-MM-DDTHH:mm:ss.sssZ)
+  // Majd levágjuk róla csak a dátum részt (az első 10 karaktert)
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Beállítjuk a max attribútumot
+  datePicker.setAttribute('max', today);
+
 document.getElementById('ProfileForm').addEventListener('submit', async function (e) {
     
     e.preventDefault(); 
