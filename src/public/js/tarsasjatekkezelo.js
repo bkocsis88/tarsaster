@@ -1,3 +1,24 @@
+//ellenőrzi, hogy admin-e a felhasználó, ha nem, akkor visszairányít a főoldalra
+async function goHomeIfNotadmin() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if(data.role!="admin"){
+                location.href="/";
+            }
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfNotadmin();
+
 async function deleteBoardgame(boardgameId){
     //törlés megerősítése popup-ban
     await modalConfirmation('Biztosan törölni szeretnéd ezt a társasjátékot?', async () =>{

@@ -1,3 +1,21 @@
+//Ellenőrzi, hogy be van e jelentkezve a felhasználó, ha igen átirányítja a főoldalra
+async function goHomeIfLoggedIn() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            location.href="/";
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfLoggedIn();
 //Települések betöltése
 async function loadSettlements() {
     try {
@@ -43,7 +61,7 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
 
     // frontend oldali ellenőrzés
     if (email == "" || username == "" || full_name == "" || birthdate == "" || location == ""){
-        await modalAlert( 'A mező kitöltése kötelező!');
+        await modalAlert( 'Minden mező kitöltése kötelező!');
         return;
     }
 
