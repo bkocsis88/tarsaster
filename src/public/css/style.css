@@ -900,10 +900,17 @@ hr {
 
 /* Társasjáték kezelő táblázat responzív megjelenítés */
 @media (max-width: 767px) {
+    .filtersBox{
+        flex-direction: column;
+        text-align: center;
+        width: 100%;
+    }
+    .AISearchFloatingBtn{
+        bottom: 128px;
+    }
     .boardgame-table thead {
         display: none;
     }
-    
     .boardgame-table tbody tr {
         display: block;
         margin-bottom: 1rem;

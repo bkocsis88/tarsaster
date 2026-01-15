@@ -1,3 +1,24 @@
+//ellenőrzi, hogy admin-e a felhasználó, ha nem, akkor visszairányít a főoldalra
+async function goHomeIfNotadmin() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if(data.role!="admin"){
+                location.href="/";
+            }
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfNotadmin();
+
 //oldal betöltésekor lekérdezzük a társasjáték adatait
 window.addEventListener('load', function() {
     //társasjáték azonosító lekérése a rejtett mezőből

@@ -63,6 +63,12 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        const file = fileInput.files[0];
+        if (file.size > 25 * 1024 * 1024) {
+            await modalAlert( '25 MB-nál kisebb képet válassz!');
+            return;
+        }
+
         // Eredmények terület megjelenítése betöltő animációval
         searchResults.style.display = 'block';
         loadingSpinner.style.display = 'inline-block';

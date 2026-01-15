@@ -1,3 +1,24 @@
+//ellenőrzi, hogy admin-e a felhasználó, ha nem, akkor visszairányít a főoldalra
+async function goHomeIfNotadmin() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            if(data.role!="admin"){
+                location.href="/";
+            }
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfNotadmin();
+
 document.getElementById('NewGameForm').addEventListener('submit', async function (e) {
     //hozzá kell adni egy esemény figyelőt és az async functiont, ami lehetővé teszi, hogy egyszerre több művelet fusson a böngészőben
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését

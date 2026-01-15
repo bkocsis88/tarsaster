@@ -1,3 +1,21 @@
+//Ellenőrzi, hogy be van e jelentkezve a felhasználó, ha igen átirányítja a főoldalra
+async function goHomeIfLoggedIn() {
+    try {
+        const response = await fetch('/api/profile', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            location.href="/";
+        } 
+    } catch (error) {
+    }
+}
+goHomeIfLoggedIn();
 //Települések betöltése
 async function loadSettlements() {
     try {
@@ -24,6 +42,15 @@ async function loadSettlements() {
 //Települések betöltése az oldal betöltésekor
 loadSettlements();
 
+const datePicker = document.getElementById('birthdateInput');
+  
+  // Lekérjük a mai dátumot ISO formátumban (YYYY-MM-DDTHH:mm:ss.sssZ)
+  // Majd levágjuk róla csak a dátum részt (az első 10 karaktert)
+  const today = new Date().toISOString().split('T')[0];
+  
+  // Beállítjuk a max attribútumot
+  datePicker.setAttribute('max', today);
+
 document.getElementById('RegistrationForm').addEventListener('submit', async function (e) {
     //hozzá kell adni egy esemény figyelőt és az async functiont, ami lehetővé teszi, hogy egyszerre több művelet fusson a böngészőben
     e.preventDefault(); //megakadályozza, hogy elküldje a form adatokat a form, ezután a js kezeli az adatok küldését
@@ -43,7 +70,7 @@ document.getElementById('RegistrationForm').addEventListener('submit', async fun
 
     // frontend oldali ellenőrzés
     if (email == "" || username == "" || full_name == "" || birthdate == "" || location == ""){
-        await modalAlert( 'A mező kitöltése kötelező!');
+        await modalAlert( 'Minden mező kitöltése kötelező!');
         return;
     }
 
